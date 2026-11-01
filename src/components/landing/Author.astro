@@ -108,11 +108,7 @@ const points = [
           {
             facts.map((f) => (
               <li>
-                <span class="au__fact-v">
-                  {f.prefix}
-                  <span data-count={f.count ? f.value : undefined}>{f.value}</span>
-                  {f.suffix}
-                </span>
+                <span class="au__fact-v">{f.prefix}<span data-count={f.count ? f.value : undefined}>{f.value}</span>{f.suffix}</span>
                 <span class="au__fact-l">{f.label}</span>
               </li>
             ))
@@ -148,7 +144,7 @@ const points = [
     <div class="cases">
       <div class="head cases__head">
         <h3 class="h2 cases__title">Кейсы агентства</h3>
-        <p class="lead">Этому курсу можно доверять, потому что всё в&nbsp;нём проверено на&nbsp;бизнесах, которые ведёт агентство.</p>
+        <p class="lead">Курс собран из&nbsp;того, что агентство каждый день делает для бизнеса: рестораны, спорт, цветы, загородный отдых.</p>
       </div>
 
       <ul class="cases__list">

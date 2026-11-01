@@ -17,6 +17,7 @@ export default defineConfig({
   trailingSlash: 'always',
   build: { format: 'directory', inlineStylesheets: 'always' },
   devToolbar: { enabled: false },
+  compressHTML: false,
   integrations: [
     sitemap({
       filter: (page) => !page.includes('/learn/') && !page.includes('/404'),
