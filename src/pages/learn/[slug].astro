@@ -200,7 +200,9 @@ const subtitle = lesson.subtitle.replace(/^Урок 0 · /, '');
     const p = load();
     document.querySelectorAll<HTMLInputElement>('[data-task]').forEach((box) => {
       const i = Number(box.dataset.task);
-      box.checked = !!p.tasks[n]?.[i];
+      // не сбрасываем галочку, если её успели поставить до загрузки скрипта
+      if (p.tasks[n]?.[i]) box.checked = true;
+      else if (box.checked) setTask(n, i, true, total);
       box.addEventListener('change', () => {
         setTask(n, i, box.checked, total);
         render();
