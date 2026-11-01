@@ -1,0 +1,96 @@
+---
+import { config } from '../../config';
+---
+
+<section class="fin section dark" aria-labelledby="fin-h" data-final>
+  <span class="fin__c fin__c--1" aria-hidden="true"></span>
+  <span class="fin__c fin__c--2" aria-hidden="true"></span>
+  <div class="wrap fin__in">
+    <h2 class="fin__h" id="fin-h" data-reveal>Первый урок — сразу после оплаты</h2>
+    <p class="lead fin__t" data-reveal style="--i:1">
+      Не&nbsp;готовы сразу? Начните с&nbsp;бесплатного челленджа «5&nbsp;дней из&nbsp;черновиков» в&nbsp;том&nbsp;же боте.
+    </p>
+    <div class="fin__cta" data-reveal style="--i:2">
+      <a class="btn btn--rose" href={config.bot.main}>Начать курс</a>
+      <a class="btn btn--ghost" href={config.bot.free}>Бесплатный челлендж</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .fin {
+    background: var(--ink);
+    color: var(--on-dark);
+    overflow: hidden;
+    padding-block: clamp(96px, 13vw, 180px);
+  }
+
+  .fin__in {
+    position: relative;
+    z-index: 1;
+  }
+
+  .fin__h {
+    font-weight: 800;
+    font-size: clamp(40px, 7.4vw, 104px);
+    line-height: 0.98;
+    letter-spacing: -0.045em;
+    max-width: 12ch;
+    text-wrap: balance;
+  }
+
+  .fin__t {
+    margin-top: 28px;
+    max-width: 44ch;
+  }
+
+  .fin__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 36px;
+  }
+
+  .fin__cta .btn {
+    flex: 1 1 auto;
+  }
+
+  .fin__c {
+    position: absolute;
+    border-radius: 50%;
+    background: var(--rose);
+  }
+
+  .fin__c--1 {
+    width: clamp(260px, 42vw, 620px);
+    aspect-ratio: 1;
+    right: -12%;
+    bottom: -30%;
+  }
+
+  .fin__c--2 {
+    width: clamp(90px, 12vw, 180px);
+    aspect-ratio: 1;
+    right: 30%;
+    top: 12%;
+    background: var(--ink-2);
+  }
+
+  @media (max-width: 719px) {
+    .fin__c--1 {
+      opacity: 0.9;
+      bottom: -18%;
+      right: -40%;
+    }
+
+    .fin__c--2 {
+      display: none;
+    }
+  }
+
+  @media (min-width: 560px) {
+    .fin__cta .btn {
+      flex: 0 0 auto;
+    }
+  }
+</style>

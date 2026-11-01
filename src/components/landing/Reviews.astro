@@ -1,0 +1,62 @@
+---
+import { Picture } from 'astro:assets';
+
+// Скрины отзывов: положить PNG/JPG в src/assets/reviews/ и включить flags.showReviews в config.ts
+const files = import.meta.glob<{ default: ImageMetadata }>('../../assets/reviews/*.{png,jpg,jpeg,webp}', { eager: true });
+const reviews = Object.keys(files)
+  .sort()
+  .map((k) => files[k]!.default);
+---
+
+{
+  reviews.length > 0 && (
+    <section class="rv section" aria-labelledby="rv-h">
+      <div class="wrap">
+        <div class="head">
+          <p class="eyebrow">Отзывы</p>
+          <h2 class="h2" id="rv-h">Что говорят участницы</h2>
+        </div>
+        <ul class="rv__list">
+          {reviews.map((src, i) => (
+            <li class="rv__item" style={`--i:${i % 4}`} data-reveal>
+              <Picture src={src} formats={['avif', 'webp']} widths={[360, 720]} sizes="(min-width: 900px) 30vw, 86vw" alt={`Отзыв участницы, скрин ${i + 1}`} loading="lazy" />
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .rv__list {
+    columns: 1;
+    column-gap: 20px;
+  }
+
+  .rv__item {
+    break-inside: avoid;
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: var(--r-lg);
+    background: var(--card);
+    box-shadow: var(--shadow);
+  }
+
+  .rv__item :global(img) {
+    width: 100%;
+    border-radius: calc(var(--r-lg) - 10px);
+  }
+
+  @media (min-width: 640px) {
+    .rv__list {
+      columns: 2;
+    }
+  }
+
+  @media (min-width: 1000px) {
+    .rv__list {
+      columns: 3;
+    }
+  }
+</style>

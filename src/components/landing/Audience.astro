@@ -1,0 +1,99 @@
+---
+import { typo } from '../../utils/typo';
+import { BriefcaseBusiness, Scissors, Baby, Store } from '@lucide/astro';
+const items = [
+  { icon: BriefcaseBusiness, title: 'Эксперты', text: 'Психологи, юристы, врачи, коучи — всем, кому блог нужен для клиентов и доверия.' },
+  { icon: Scissors, title: 'Мастера', text: 'Маникюр, брови, массаж, фото — тем, кому важно, чтобы запись шла из профиля.' },
+  { icon: Baby, title: 'Мамы в декрете', text: 'Со своим делом или идеей, которую хочется показать людям.' },
+  { icon: Store, title: 'Начинающие предприниматели', text: 'Кто запускает своё дело и пока продвигает его сам.' },
+];
+---
+
+<section class="aud section" aria-labelledby="aud-h">
+  <div class="wrap aud__grid">
+    <div class="head aud__head">
+      <p class="eyebrow">Для кого</p>
+      <h2 class="h2" id="aud-h">Для тех, кто ведёт соцсети сам — или давно собирается</h2>
+      <p class="lead">Идеи есть, черновики копятся, а&nbsp;публиковать страшно или некогда. Курс помогает перейти к&nbsp;регулярному блогу, который приводит клиентов.</p>
+    </div>
+    <ul class="aud__list">
+      {
+        items.map((it, i) => (
+          <li class="card aud__card" style={`--i:${i}`} data-reveal>
+            <span class="icon-box">
+              <it.icon size={24} stroke-width={1.8} aria-hidden="true" />
+            </span>
+            <h3 class="h3">{it.title}</h3>
+            <p>{typo(it.text)}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .aud__list {
+    display: grid;
+    gap: 14px;
+  }
+
+  .aud__card {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 18px;
+    row-gap: 6px;
+    align-items: start;
+    transition:
+      transform 0.35s var(--ease),
+      box-shadow 0.35s var(--ease);
+  }
+
+  .aud__card .icon-box {
+    grid-row: span 2;
+  }
+
+  .aud__card p {
+    color: var(--muted);
+    font-size: 16px;
+  }
+
+  @media (hover: hover) {
+    .aud__card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lift);
+    }
+  }
+
+  @media (min-width: 720px) {
+    .aud__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .aud__card {
+      grid-template-columns: 1fr;
+      row-gap: 12px;
+    }
+
+    .aud__card .icon-box {
+      grid-row: auto;
+      margin-bottom: 18px;
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .aud__grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: 64px;
+      align-items: start;
+    }
+
+    .aud__head {
+      position: sticky;
+      top: calc(var(--header-h) + 32px);
+      margin-bottom: 0;
+    }
+  }
+</style>

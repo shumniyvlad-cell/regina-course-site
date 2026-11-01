@@ -1,0 +1,586 @@
+---
+import { ArrowLeft, ArrowRight, Clock, Check, Send, FileText, FileSpreadsheet, FileType, Download, ChevronRight } from '@lucide/astro';
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import VideoPlayer from '../../components/VideoPlayer.astro';
+import { lessons, moduleOf, pad } from '../../data/lessons';
+import { materialsFor } from '../../data/materials';
+import { videoFor } from '../../data/videos';
+import type { Lesson } from '../../data/types';
+import { config, url } from '../../config';
+
+export function getStaticPaths() {
+  return lessons.map((lesson) => ({ params: { slug: lesson.slug }, props: { lesson } }));
+}
+
+interface Props {
+  lesson: Lesson;
+}
+const { lesson } = Astro.props;
+const mod = moduleOf(lesson);
+const video = videoFor(lesson.n);
+const mats = materialsFor(lesson.n);
+const prev = lessons.find((l) => l.n === lesson.n - 1);
+const next = lessons.find((l) => l.n === lesson.n + 1);
+
+const covers = import.meta.glob<{ default: ImageMetadata }>('../../assets/covers/*.png', { eager: true });
+const poster = covers[`../../assets/covers/lesson-${pad(lesson.n)}.png`]!.default;
+const kindIcon = { pdf: FileText, xlsx: FileSpreadsheet, txt: FileType } as const;
+
+const fmt = (t: number) => `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`;
+const chapters = video.chapters ?? [];
+const subtitle = lesson.subtitle.replace(/^Урок 0 · /, '');
+---
+
+<Base title={`Урок ${lesson.n}. ${lesson.title} — «Выйти из черновиков»`} noindex bodyClass="learn">
+  <Header variant="learn" />
+  <main id="main" class="ls" data-lesson={lesson.n} data-task-count={lesson.task.items.length}>
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Навигация">
+        <ol>
+          <li><a href={url('learn/')}>Курс</a></li>
+          <li aria-hidden="true"><ChevronRight size={14} stroke-width={2} /></li>
+          <li><a href={url('learn/') + `#module-${mod.lessons[0]!.n}`}>{mod.short === 'Старт' ? 'Старт' : `${mod.label} · ${mod.short}`}</a></li>
+          <li aria-hidden="true"><ChevronRight size={14} stroke-width={2} /></li>
+          <li aria-current="page">Урок {lesson.n}</li>
+        </ol>
+      </nav>
+
+      <VideoPlayer video={video} poster={poster} title={lesson.title} eager />
+
+      <div class="ls__grid">
+        <div class="ls__main">
+          <header class="ls__head">
+            <p class="ls__meta">
+              <span class="chip">{lesson.n === 0 ? 'Вводный урок' : `Урок ${lesson.n} из 15`}</span>
+              <span class="chip"><Clock size={13} stroke-width={2} aria-hidden="true" /> {lesson.duration}</span>
+            </p>
+            <h1 class="ls__title">{lesson.title}</h1>
+            <p class="lead">{subtitle}</p>
+          </header>
+
+          <section class="ls__block" aria-labelledby="inside-h">
+            <h2 class="ls__h2" id="inside-h">В&nbsp;этом уроке</h2>
+            {
+              chapters.length > 0 ? (
+                <ol class="chapters">
+                  {chapters.map((c) => (
+                    <li>
+                      <button type="button" class="chapter" data-seek={c.t}>
+                        <span class="chapter__t mono">{fmt(c.t)}</span>
+                        <span>{c.title}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ol>
+              ) : (
+                <ol class="inside">
+                  {lesson.inside.map((t, i) => (
+                    <li>
+                      <span class="inside__n mono">{pad(i + 1)}</span>
+                      <span>{t}</span>
+                    </li>
+                  ))}
+                </ol>
+              )
+            }
+          </section>
+
+          <section class="task dark" aria-labelledby="task-h">
+            <p class="task__k mono">
+              Задание урока {lesson.n}
+              <span class="task__time"><Clock size={13} stroke-width={2} aria-hidden="true" /> {lesson.task.time}</span>
+            </p>
+            <h2 class="task__h" id="task-h">{lesson.task.title}</h2>
+            <ul class="task__list">
+              {
+                lesson.task.items.map((item, i) => (
+                  <li>
+                    <label class="task__item">
+                      <input type="checkbox" data-task={i} />
+                      <span class="task__box" aria-hidden="true">
+                        <Check size={16} stroke-width={3} />
+                      </span>
+                      <span class="task__text">{item}</span>
+                    </label>
+                  </li>
+                ))
+              }
+            </ul>
+            <a class="btn btn--rose task__btn" href={config.bot.done(lesson.n)} data-done-btn>
+              <Send size={18} stroke-width={2} aria-hidden="true" />
+              Задание сделано — отметить в&nbsp;боте
+            </a>
+            <p class="task__state" data-done-state hidden>
+              <Check size={16} stroke-width={2.6} aria-hidden="true" /> Отмечено как сделанное на&nbsp;этом устройстве
+            </p>
+          </section>
+        </div>
+
+        <aside class="ls__aside">
+          {
+            mats.length > 0 && (
+              <section class="side" aria-labelledby="mats-h">
+                <h2 class="side__h" id="mats-h">Материалы к&nbsp;уроку</h2>
+                <ul class="side__list">
+                  {mats.map((m) => {
+                    const Icon = kindIcon[m.kind];
+                    return (
+                      <li>
+                        <a class="side__item" href={url(m.file)} download={m.download}>
+                          <Icon size={20} stroke-width={1.8} aria-hidden="true" />
+                          <span>{m.title}</span>
+                          <Download size={18} stroke-width={1.8} aria-hidden="true" class="side__dl" />
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
+                <a class="link side__all" href={url('learn/') + '#materials'}>Все материалы курса</a>
+              </section>
+            )
+          }
+          <section class="side side--soft">
+            <p class="side__tip">
+              Совет: один урок в&nbsp;день и&nbsp;сразу задание. Бот напомнит про следующий урок в&nbsp;10:00 по&nbsp;Москве.
+            </p>
+          </section>
+        </aside>
+      </div>
+
+      <nav class="pn" aria-label="Соседние уроки">
+        {
+          prev ? (
+            <a class="pn__link" href={url(`learn/${prev.slug}/`)}>
+              <span class="pn__k mono"><ArrowLeft size={15} stroke-width={2} aria-hidden="true" /> Урок {prev.n}</span>
+              <span class="pn__t">{prev.title}</span>
+            </a>
+          ) : (
+            <a class="pn__link" href={url('learn/')}>
+              <span class="pn__k mono"><ArrowLeft size={15} stroke-width={2} aria-hidden="true" /> Курс</span>
+              <span class="pn__t">Все уроки</span>
+            </a>
+          )
+        }
+        {
+          next ? (
+            <a class="pn__link pn__link--next" href={url(`learn/${next.slug}/`)}>
+              <span class="pn__k mono">Урок {next.n} <ArrowRight size={15} stroke-width={2} aria-hidden="true" /></span>
+              <span class="pn__t">{next.title}</span>
+            </a>
+          ) : (
+            <a class="pn__link pn__link--next" href={url('learn/')}>
+              <span class="pn__k mono">Финиш <ArrowRight size={15} stroke-width={2} aria-hidden="true" /></span>
+              <span class="pn__t">Все уроки и&nbsp;материалы</span>
+            </a>
+          )
+        }
+      </nav>
+    </div>
+  </main>
+  <Footer />
+</Base>
+
+<script>
+  import { load, markViewed, setDone, setTask } from '../../scripts/progress';
+
+  const root = document.querySelector<HTMLElement>('[data-lesson]');
+  if (root) {
+    const n = Number(root.dataset.lesson);
+    const total = Number(root.dataset.taskCount);
+    markViewed(n);
+
+    const state = document.querySelector<HTMLElement>('[data-done-state]');
+    const render = () => {
+      const p = load();
+      if (state) state.hidden = !p.done.includes(n);
+    };
+
+    const p = load();
+    document.querySelectorAll<HTMLInputElement>('[data-task]').forEach((box) => {
+      const i = Number(box.dataset.task);
+      box.checked = !!p.tasks[n]?.[i];
+      box.addEventListener('change', () => {
+        setTask(n, i, box.checked, total);
+        render();
+      });
+    });
+
+    document.querySelector('[data-done-btn]')?.addEventListener('click', () => {
+      setDone(n);
+      render();
+    });
+    render();
+  }
+</script>
+
+<style>
+  .ls {
+    padding-block: 8px var(--section);
+  }
+
+  .crumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    padding-block: 12px 18px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .crumbs a {
+    text-decoration: none;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .crumbs a:hover {
+    color: var(--accent);
+  }
+
+  .crumbs [aria-current] {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .ls__grid {
+    display: grid;
+    gap: 28px;
+    margin-top: clamp(28px, 4vw, 44px);
+  }
+
+  .ls__main {
+    display: grid;
+    gap: 28px;
+    min-width: 0;
+  }
+
+  .ls__head {
+    display: grid;
+    gap: 14px;
+  }
+
+  .ls__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .ls__title {
+    font-weight: 800;
+    font-size: clamp(32px, 4.6vw, 58px);
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
+
+  .ls__h2 {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 14px;
+  }
+
+  .inside,
+  .chapters {
+    display: grid;
+    gap: 8px;
+  }
+
+  .inside li {
+    display: flex;
+    gap: 14px;
+    align-items: baseline;
+    padding: 14px 18px;
+    border-radius: var(--r-sm);
+    background: var(--card);
+    font-weight: 600;
+  }
+
+  .inside__n {
+    font-size: 12.5px;
+    color: var(--accent);
+  }
+
+  .chapter {
+    display: flex;
+    gap: 14px;
+    align-items: baseline;
+    width: 100%;
+    padding: 14px 18px;
+    border: 0;
+    border-radius: var(--r-sm);
+    background: var(--card);
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .chapter:hover {
+    background: var(--rose-soft);
+  }
+
+  .chapter__t {
+    font-size: 13px;
+    color: var(--accent);
+    min-width: 44px;
+  }
+
+  /* ---- задание ---- */
+  .task {
+    position: relative;
+    display: grid;
+    gap: 16px;
+    padding: clamp(24px, 3.4vw, 40px);
+    border-radius: var(--r-xl);
+    background: var(--ink);
+    color: var(--on-dark);
+  }
+
+  .task__k {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--rose);
+  }
+
+  .task__time {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border: 1px solid rgba(227, 183, 174, 0.4);
+    border-radius: 999px;
+    font-size: 11px;
+  }
+
+  .task__h {
+    font-size: clamp(26px, 3vw, 36px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+  }
+
+  .task__list {
+    display: grid;
+    gap: 4px;
+  }
+
+  .task__item {
+    position: relative;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 12px 6px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .task__item:hover {
+    background: rgba(244, 240, 234, 0.05);
+  }
+
+  .task__item input {
+    position: absolute;
+    opacity: 0;
+    width: 24px;
+    height: 24px;
+    margin: 0;
+  }
+
+  .task__box {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    border: 2px solid rgba(244, 240, 234, 0.5);
+    color: transparent;
+    flex: none;
+    transition:
+      background-color 0.2s,
+      border-color 0.2s,
+      color 0.2s;
+  }
+
+  .task__item input:checked + .task__box {
+    background: var(--rose);
+    border-color: var(--rose);
+    color: var(--ink);
+  }
+
+  .task__item input:focus-visible + .task__box {
+    outline: 3px solid var(--rose);
+    outline-offset: 3px;
+  }
+
+  .task__text {
+    font-size: 16.5px;
+    line-height: 1.45;
+    padding-top: 1px;
+    transition: color 0.2s;
+  }
+
+  .task__item input:checked ~ .task__text {
+    color: var(--on-dark-muted);
+    text-decoration: line-through;
+    text-decoration-color: rgba(227, 183, 174, 0.7);
+  }
+
+  .task__btn {
+    margin-top: 6px;
+    justify-self: start;
+    text-align: center;
+  }
+
+  @media (max-width: 559px) {
+    .task__btn {
+      justify-self: stretch;
+      padding-inline: 18px;
+      font-size: 16px;
+    }
+  }
+
+  .task__state {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14.5px;
+    color: var(--rose);
+  }
+
+  .task__state[hidden] {
+    display: none;
+  }
+
+  /* ---- боковая колонка ---- */
+  .ls__aside {
+    display: grid;
+    gap: 16px;
+    align-content: start;
+  }
+
+  .side {
+    padding: 22px 24px;
+    border-radius: var(--r-lg);
+    background: var(--card);
+    box-shadow: var(--shadow);
+  }
+
+  .side--soft {
+    background: var(--rose-soft);
+    box-shadow: none;
+  }
+
+  .side__h {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    margin-bottom: 10px;
+  }
+
+  .side__list {
+    display: grid;
+  }
+
+  .side__item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15.5px;
+    line-height: 1.3;
+  }
+
+  .side__item :global(svg) {
+    color: var(--accent);
+  }
+
+  .side__item:hover {
+    color: var(--accent);
+  }
+
+  .side__all {
+    display: inline-block;
+    margin-top: 14px;
+    font-size: 15px;
+  }
+
+  .side__tip {
+    font-size: 15px;
+    color: var(--ink);
+  }
+
+  /* ---- соседние уроки ---- */
+  .pn {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: clamp(36px, 5vw, 56px);
+  }
+
+  .pn__link {
+    display: grid;
+    gap: 6px;
+    align-content: start;
+    padding: 18px 20px;
+    border-radius: var(--r-md);
+    background: var(--card);
+    box-shadow: var(--shadow);
+    text-decoration: none;
+    transition:
+      transform 0.3s var(--ease),
+      box-shadow 0.3s var(--ease);
+  }
+
+  .pn__link:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lift);
+  }
+
+  .pn__link--next {
+    text-align: right;
+    justify-items: end;
+  }
+
+  .pn__k {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .pn__t {
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 1.3;
+  }
+
+  @media (min-width: 1000px) {
+    .ls__grid {
+      grid-template-columns: minmax(0, 1fr) 340px;
+      gap: 40px;
+      align-items: start;
+    }
+
+    .ls__aside {
+      position: sticky;
+      top: calc(var(--header-h) + 24px);
+    }
+  }
+</style>

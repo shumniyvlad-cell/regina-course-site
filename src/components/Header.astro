@@ -1,0 +1,232 @@
+---
+import { Menu, X } from '@lucide/astro';
+import { config, url } from '../config';
+
+interface Props {
+  variant?: 'landing' | 'learn';
+}
+const { variant = 'landing' } = Astro.props;
+
+const home = url('');
+const links =
+  variant === 'learn'
+    ? [
+        { href: url('learn/'), label: 'Мои уроки' },
+        { href: url('learn/') + '#materials', label: 'Материалы' },
+        { href: config.bot.plain, label: 'Помощь' },
+      ]
+    : [
+        { href: home + '#program', label: 'Программа' },
+        { href: home + '#author', label: 'Автор' },
+        { href: home + '#pricing', label: 'Тарифы' },
+        { href: home + '#faq', label: 'Вопросы' },
+      ];
+---
+
+<header class="hdr" data-header data-variant={variant}>
+  <div class="wrap hdr__in">
+    <a class="hdr__brand" href={variant === 'learn' ? url('learn/') : home}>
+      <span class="hdr__name">{config.brand.author}</span>
+      <span class="hdr__tag">{config.brand.school}</span>
+    </a>
+
+    <nav class="hdr__nav" aria-label="Основное меню">
+      <ul>
+        {links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <div class="hdr__actions">
+      {
+        variant === 'learn' ? (
+          <a class="btn hdr__cta" href={home}>О курсе</a>
+        ) : (
+          <a class="btn hdr__cta" href={config.bot.main}>Начать курс</a>
+        )
+      }
+      <button class="hdr__burger" type="button" aria-expanded="false" aria-controls="mnav" data-burger>
+        <span class="sr-only">Меню</span>
+        <Menu size={24} stroke-width={1.8} class="i-open" aria-hidden="true" />
+        <X size={24} stroke-width={1.8} class="i-close" aria-hidden="true" />
+      </button>
+    </div>
+  </div>
+
+  <div class="mnav" id="mnav" data-mnav hidden>
+    <ul class="wrap">
+      {links.map((l) => <li><a href={l.href} data-mnav-link>{l.label}</a></li>)}
+    </ul>
+  </div>
+</header>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  const burger = document.querySelector<HTMLButtonElement>('[data-burger]');
+  const nav = document.querySelector<HTMLElement>('[data-mnav]');
+
+  if (header) {
+    const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+
+  const setOpen = (open: boolean) => {
+    if (!burger || !nav || !header) return;
+    burger.setAttribute('aria-expanded', String(open));
+    header.classList.toggle('is-open', open);
+    nav.hidden = !open;
+  };
+
+  burger?.addEventListener('click', () => setOpen(burger.getAttribute('aria-expanded') !== 'true'));
+  nav?.querySelectorAll('[data-mnav-link]').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && burger?.getAttribute('aria-expanded') === 'true') {
+      setOpen(false);
+      burger.focus();
+    }
+  });
+</script>
+
+<style>
+  .hdr {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    transition:
+      background-color 0.3s,
+      box-shadow 0.3s,
+      backdrop-filter 0.3s;
+  }
+
+  .hdr.is-scrolled,
+  .hdr.is-open {
+    background: rgba(244, 240, 234, 0.86);
+    backdrop-filter: saturate(1.4) blur(14px);
+    -webkit-backdrop-filter: saturate(1.4) blur(14px);
+    box-shadow: 0 1px 0 var(--line);
+  }
+
+  .hdr__in {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    min-height: var(--header-h);
+  }
+
+  .hdr__brand {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    text-decoration: none;
+    line-height: 1.1;
+    margin-right: auto;
+  }
+
+  .hdr__name {
+    font-weight: 800;
+    font-size: 17px;
+    letter-spacing: -0.02em;
+  }
+
+  .hdr__tag {
+    font-family: var(--f-mono);
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+  }
+
+  .hdr__nav {
+    display: none;
+  }
+
+  .hdr__nav ul {
+    display: flex;
+    gap: 6px;
+  }
+
+  .hdr__nav a {
+    display: block;
+    padding: 10px 14px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    transition: background-color 0.2s;
+  }
+
+  .hdr__nav a:hover {
+    background: rgba(47, 43, 39, 0.06);
+  }
+
+  .hdr__actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .hdr__cta {
+    min-height: 44px;
+    padding: 0 16px;
+    white-space: nowrap;
+    font-size: 15px;
+    border-radius: 14px;
+  }
+
+  .hdr__burger {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 14px;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .hdr__burger .i-close,
+  .hdr.is-open .hdr__burger .i-open {
+    display: none;
+  }
+
+  .hdr.is-open .hdr__burger .i-close {
+    display: block;
+  }
+
+  .mnav ul {
+    display: grid;
+    padding-block: 8px 20px;
+  }
+
+  .mnav a {
+    display: block;
+    padding: 14px 0;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+    border-bottom: 1px solid var(--line);
+  }
+
+  @media (min-width: 960px) {
+    .hdr__brand {
+      flex-direction: row;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .hdr__nav {
+      display: block;
+    }
+
+    .hdr__burger,
+    .mnav {
+      display: none !important;
+    }
+
+    .hdr__cta {
+      min-height: 48px;
+      padding: 0 22px;
+    }
+  }
+</style>

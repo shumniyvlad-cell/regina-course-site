@@ -1,0 +1,55 @@
+---
+import { X } from '@lucide/astro';
+import VideoPlayer from '../VideoPlayer.astro';
+import cover from '../../assets/covers/lesson-00.png';
+import { config } from '../../config';
+import type { LessonVideo } from '../../data/types';
+
+const video = { provider: config.trailer.provider, id: config.trailer.id } as LessonVideo;
+---
+
+<dialog class="tr" data-trailer aria-label="Как выглядит урок">
+  <button type="button" class="tr__close" data-trailer-close aria-label="Закрыть">
+    <X size={22} stroke-width={2} aria-hidden="true" />
+  </button>
+  <VideoPlayer video={video} poster={cover} title="Как выглядит урок" />
+</dialog>
+
+<script>
+  const dlg = document.querySelector<HTMLDialogElement>('[data-trailer]');
+  document.querySelectorAll('[data-trailer-open]').forEach((b) => b.addEventListener('click', () => dlg?.showModal()));
+  dlg?.querySelector('[data-trailer-close]')?.addEventListener('click', () => dlg.close());
+  dlg?.addEventListener('close', () => {
+    // останавливаем видео: сбрасываем iframe
+    const frame = dlg.querySelector('iframe');
+    if (frame) frame.src = 'about:blank';
+  });
+</script>
+
+<style>
+  .tr {
+    width: min(1100px, 100vw - 24px);
+    max-width: none;
+    padding: 12px;
+    border: 0;
+    border-radius: var(--r-lg);
+    background: var(--ink);
+  }
+
+  .tr::backdrop {
+    background: rgba(30, 26, 23, 0.8);
+  }
+
+  .tr__close {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin: 0 0 10px auto;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(244, 240, 234, 0.1);
+    color: var(--on-dark);
+    cursor: pointer;
+  }
+</style>

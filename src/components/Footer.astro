@@ -1,0 +1,96 @@
+---
+import { config, url } from '../config';
+const year = new Date().getFullYear();
+---
+
+<footer class="ftr">
+  <div class="wrap">
+    <div class="ftr__top">
+      <div class="ftr__brand">
+        <p class="ftr__course">{config.brand.course}</p>
+        <p class="ftr__tag">{config.brand.school}</p>
+      </div>
+      <ul class="ftr__links">
+        <li><a href={config.contacts.telegram}>Telegram: {config.contacts.telegramLabel}</a></li>
+        <li><a href={config.contacts.instagram}>Instagram*: {config.contacts.instagramLabel}</a></li>
+        <li><a href={config.contacts.agencyInstagram}>Агентство VMEDIA*: {config.contacts.agencyInstagramLabel}</a></li>
+        <li><a href={config.bot.main}>Бот курса: @{config.bot.username}</a></li>
+      </ul>
+      <ul class="ftr__links">
+        <li><a href={url('oferta/')}>Публичная оферта</a></li>
+        <li><a href={url('privacy/')}>Политика обработки персональных данных</a></li>
+        {config.flags.learnEnabled && <li><a href={url('learn/')}>Мои уроки</a></li>}
+      </ul>
+    </div>
+    <div class="ftr__bottom">
+      <p>{config.brand.author} · {config.legal.status} · ИНН {config.legal.inn}</p>
+      <p>© {year} {config.brand.school} · {config.brand.author}</p>
+      <p class="ftr__meta">* Instagram принадлежит компании Meta, признанной экстремистской организацией и&nbsp;запрещённой в&nbsp;России.</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .ftr {
+    padding-block: 56px calc(40px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid var(--line);
+    font-size: 15px;
+    color: var(--muted);
+  }
+
+  .ftr__top {
+    display: grid;
+    gap: 28px;
+  }
+
+  .ftr__course {
+    font-weight: 800;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  .ftr__tag {
+    font-family: var(--f-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    margin-top: 4px;
+  }
+
+  .ftr__links {
+    display: grid;
+    gap: 2px;
+  }
+
+  .ftr__links a {
+    display: inline-block;
+    padding: 6px 0;
+    text-decoration: none;
+    color: var(--ink);
+    transition: color 0.2s;
+  }
+
+  .ftr__links a:hover {
+    color: var(--accent);
+  }
+
+  .ftr__bottom {
+    display: grid;
+    gap: 6px;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    font-size: 13.5px;
+  }
+
+  .ftr__meta {
+    max-width: 70ch;
+  }
+
+  @media (min-width: 860px) {
+    .ftr__top {
+      grid-template-columns: 1.2fr 1fr 1fr;
+    }
+  }
+</style>

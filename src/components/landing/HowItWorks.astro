@@ -1,0 +1,359 @@
+---
+import { typo } from '../../utils/typo';
+import { Picture } from 'astro:assets';
+import { CirclePlay, PencilLine, BellRing } from '@lucide/astro';
+import photo from '../../assets/photos/02_meetup_phone.jpg';
+import notebook from '../../assets/materials/notebook.jpg';
+import ai from '../../assets/materials/ai.jpg';
+import checklist from '../../assets/materials/checklist.jpg';
+
+const steps = [
+  { icon: CirclePlay, title: '16 видеоуроков по 6–12 минут', text: 'Регина объясняет на слайдах и показывает примеры. Вводный урок и 5 модулей.' },
+  { icon: PencilLine, title: 'Задание на 30–40 минут', text: 'После каждого урока — не теория, а действие: формула темы, шапка, ролик, контент-план.' },
+  { icon: BellRing, title: 'Уроки — на сайте, ритм — в боте', text: 'Смотрите в личном кабинете с телефона или компьютера. Бот по будням в 10:00 по Москве напоминает про урок дня. В выходные — пауза.' },
+];
+const nb = typo;
+---
+
+<section class="how section" aria-labelledby="how-h">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">Как устроен курс</p>
+      <h2 class="h2" id="how-h">Короткий урок, одно задание, один шаг в&nbsp;день</h2>
+    </div>
+
+    <div class="how__layout">
+      <figure class="how__photo" data-reveal>
+        <Picture
+          src={photo}
+          formats={['avif', 'webp']}
+          widths={[420, 640, 900]}
+          sizes="(min-width: 1100px) 40vw, 92vw"
+          alt="Регина Репортёр показывает участнице что-то в телефоне на встрече в ресторане"
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption class="pill">На встрече «Выйти из черновиков»</figcaption>
+      </figure>
+
+      <ul class="how__steps">
+        {
+          steps.map((s, i) => (
+            <li class={`card how__step ${i === 2 ? 'card--dark' : ''}`} style={`--i:${i}`} data-reveal>
+              <span class="icon-box">
+                <s.icon size={24} stroke-width={1.8} aria-hidden="true" />
+              </span>
+              <div>
+                <h3 class="h3">{nb(s.title)}</h3>
+                <p>{nb(s.text)}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="mats" data-reveal>
+      <div class="mats__text">
+        <h3 class="h3 mats__title">Материалы курса</h3>
+        <ul class="mats__list">
+          <li>Рабочая тетрадь</li>
+          <li>ИИ-промпты к&nbsp;урокам</li>
+          <li>Шаблон «Контент-план на&nbsp;месяц»</li>
+          <li>Чек-лист шапки профиля</li>
+        </ul>
+      </div>
+
+      <div class="fan" aria-hidden="true">
+        <div class="fan__item fan__item--1">
+          <Picture src={notebook} formats={['avif', 'webp']} widths={[220, 440]} sizes="220px" alt="" loading="lazy" />
+        </div>
+        <div class="fan__item fan__item--2">
+          <Picture src={ai} formats={['avif', 'webp']} widths={[220, 440]} sizes="220px" alt="" loading="lazy" />
+        </div>
+        <div class="fan__item fan__item--3 sheet">
+          <div class="sheet__head">Контент-план на&nbsp;месяц</div>
+          <div class="sheet__row sheet__row--h"><span>№</span><span>Тема</span><span>Формат</span></div>
+          {
+            ['Рилс', 'Карусель', 'Сторис', 'Рилс', 'Карусель', 'Сторис', 'Рилс', 'Карусель'].map((f, i) => (
+              <div class="sheet__row">
+                <span>{i + 1}</span>
+                <span class="sheet__bar" style={`--w:${[78, 60, 70, 52, 84, 64, 58, 72][i]}%`} />
+                <span class={`sheet__tag sheet__tag--${i % 3}`}>{f}</span>
+              </div>
+            ))
+          }
+        </div>
+        <div class="fan__item fan__item--4">
+          <Picture src={checklist} formats={['avif', 'webp']} widths={[220, 440]} sizes="220px" alt="" loading="lazy" />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .how__layout {
+    display: grid;
+    gap: 20px;
+  }
+
+  .how__photo {
+    position: relative;
+    border-radius: var(--r-xl);
+    overflow: hidden;
+    aspect-ratio: 1080 / 1040;
+    background: #3a2f2a;
+  }
+
+  .how__photo :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .how__photo .pill {
+    position: absolute;
+    left: 16px;
+    bottom: 16px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(47, 43, 39, 0.55);
+    color: #fff;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    font-family: var(--f-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .how__steps {
+    display: grid;
+    gap: 14px;
+  }
+
+  .how__step {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+  }
+
+  .how__step .h3 {
+    margin-bottom: 8px;
+  }
+
+  .how__step p {
+    color: var(--muted);
+    font-size: 16px;
+  }
+
+  .how__step.card--dark p {
+    color: var(--on-dark-muted);
+  }
+
+  /* ---- материалы ---- */
+  .mats {
+    display: grid;
+    gap: 28px;
+    margin-top: clamp(28px, 4vw, 48px);
+    padding: clamp(28px, 4vw, 48px);
+    border-radius: var(--r-xl);
+    background: var(--card);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .mats__title {
+    margin-bottom: 18px;
+  }
+
+  .mats__list {
+    display: grid;
+    gap: 2px;
+  }
+
+  .mats__list li {
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+    font-weight: 600;
+  }
+
+  .mats__list li::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--rose);
+    flex: none;
+    transform: translateY(-2px);
+  }
+
+  .fan {
+    position: relative;
+    height: 250px;
+    max-width: 520px;
+    width: 100%;
+    justify-self: center;
+  }
+
+  .fan__item {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    width: 138px;
+    aspect-ratio: 1 / 1.414;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 16px 36px rgba(47, 43, 39, 0.16);
+    transform: translateX(-50%) translateX(calc(var(--x) * var(--k, 0.66))) rotate(var(--r));
+    transition: transform 0.5s var(--ease);
+    background: #fff;
+  }
+
+  .fan__item :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .fan__item--1 {
+    --x: -120px;
+    --r: -12deg;
+    top: 44px;
+  }
+  .fan__item--2 {
+    --x: -40px;
+    --r: -4deg;
+  }
+  .fan__item--3 {
+    --x: 40px;
+    --r: 4deg;
+  }
+  .fan__item--4 {
+    --x: 120px;
+    --r: 12deg;
+    top: 44px;
+  }
+
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .mats:hover .fan__item--1 {
+      --x: -150px;
+      --r: -15deg;
+    }
+    .mats:hover .fan__item--2 {
+      --x: -50px;
+      --r: -5deg;
+    }
+    .mats:hover .fan__item--3 {
+      --x: 50px;
+      --r: 5deg;
+    }
+    .mats:hover .fan__item--4 {
+      --x: 150px;
+      --r: 15deg;
+    }
+  }
+
+  .sheet {
+    padding: 12px 10px;
+    display: grid;
+    align-content: start;
+    gap: 5px;
+    font-size: 8.5px;
+    background: #fff;
+  }
+
+  .sheet__head {
+    font-weight: 800;
+    font-size: 11px;
+    letter-spacing: -0.01em;
+    padding: 4px 2px 8px;
+  }
+
+  .sheet__row {
+    display: grid;
+    grid-template-columns: 14px 1fr 46px;
+    gap: 5px;
+    align-items: center;
+    height: 15px;
+    padding-inline: 2px;
+    border-bottom: 1px solid #f0ebe4;
+  }
+
+  .sheet__row--h {
+    background: var(--ink);
+    color: var(--on-dark);
+    border-radius: 4px;
+    font-family: var(--f-mono);
+    font-size: 7px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .sheet__bar {
+    height: 4px;
+    width: var(--w);
+    border-radius: 2px;
+    background: #e6ded4;
+  }
+
+  .sheet__tag {
+    height: 11px;
+    border-radius: 6px;
+    font-size: 6.5px;
+    font-weight: 600;
+    display: grid;
+    place-items: center;
+    background: var(--rose-soft);
+    color: var(--accent);
+  }
+
+  .sheet__tag--1 {
+    background: var(--rose);
+    color: var(--ink);
+  }
+
+  .sheet__tag--2 {
+    background: #efe9e1;
+    color: var(--muted);
+  }
+
+  @media (min-width: 560px) {
+    .fan {
+      height: 340px;
+    }
+
+    .fan__item {
+      width: 196px;
+      --k: 1;
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .how__layout {
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+      gap: 28px;
+      align-items: stretch;
+    }
+
+    .how__photo {
+      aspect-ratio: auto;
+      min-height: 100%;
+    }
+
+    .how__steps {
+      gap: 20px;
+    }
+
+    .mats {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+      align-items: center;
+      gap: 48px;
+    }
+  }
+</style>

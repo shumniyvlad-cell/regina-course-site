@@ -1,0 +1,140 @@
+---
+import { config } from '../../config';
+const steps = [
+  { t: 'Откройте бота', d: 'Кнопка «Начать курс» на этой странице.' },
+  { t: 'Выберите тариф', d: 'Бот пришлёт сумму и реквизиты.' },
+  { t: 'Переведите и пришлите скрин', d: 'По СБП или на карту, скрин — прямо в бот.' },
+  { t: 'Получите доступ', d: 'После подтверждения придут ссылка на уроки, пароль и материалы.' },
+];
+---
+
+<section class="pay section" aria-labelledby="pay-h">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">Как оплатить</p>
+      <h2 class="h2" id="pay-h">Четыре шага до&nbsp;первого урока</h2>
+    </div>
+    <ol class="pay__steps">
+      {
+        steps.map((s, i) => (
+          <li class="pay__step" style={`--i:${i}`} data-reveal>
+            <span class="pay__num mono">{i + 1}</span>
+            <h3 class="pay__t">{s.t}</h3>
+            <p class="pay__d">{s.d}</p>
+          </li>
+        ))
+      }
+    </ol>
+    <p class="pay__note">
+      Оплату подтверждаем вручную — {config.legal.paymentConfirm}. После оплаты вы получите чек самозанятой.
+    </p>
+    <a class="btn pay__btn" href={config.bot.main}>Начать курс</a>
+  </div>
+</section>
+
+<style>
+  .pay {
+    background: var(--card);
+  }
+
+  .pay__steps {
+    display: grid;
+    gap: 0;
+    position: relative;
+  }
+
+  .pay__step {
+    position: relative;
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    column-gap: 18px;
+    row-gap: 4px;
+    padding-bottom: 28px;
+  }
+
+  /* вертикальная линия на мобильном */
+  .pay__step:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 23px;
+    top: 52px;
+    bottom: 4px;
+    width: 2px;
+    background: var(--line);
+  }
+
+  .pay__num {
+    grid-row: span 2;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 17px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .pay__t {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+    padding-top: 10px;
+  }
+
+  .pay__d {
+    color: var(--muted);
+    font-size: 16px;
+  }
+
+  .pay__note {
+    margin-top: 12px;
+    font-size: 15px;
+    color: var(--muted);
+    max-width: 64ch;
+  }
+
+  .pay__btn {
+    margin-top: 28px;
+  }
+
+  @media (min-width: 900px) {
+    .pay__steps {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 28px;
+    }
+
+    .pay__step {
+      grid-template-columns: 1fr;
+      align-content: start;
+      padding-bottom: 0;
+      row-gap: 10px;
+    }
+
+    .pay__num {
+      grid-row: auto;
+      margin-bottom: 14px;
+    }
+
+    .pay__t {
+      padding-top: 0;
+    }
+
+    /* горизонтальная линия между номерами */
+    .pay__step:not(:last-child)::before {
+      left: 60px;
+      right: -16px;
+      top: 23px;
+      bottom: auto;
+      width: auto;
+      height: 2px;
+    }
+
+    .pay__note {
+      margin-top: 40px;
+    }
+  }
+</style>

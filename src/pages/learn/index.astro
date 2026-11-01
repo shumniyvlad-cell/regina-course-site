@@ -1,0 +1,484 @@
+---
+import { Picture } from 'astro:assets';
+import { FileText, FileSpreadsheet, FileType, Download, Check, Eye, MessageCircle } from '@lucide/astro';
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { modules, pad } from '../../data/lessons';
+import { materials } from '../../data/materials';
+import { config, url } from '../../config';
+
+const covers = import.meta.glob<{ default: ImageMetadata }>('../../assets/covers/*.png', { eager: true });
+const cover = (n: number) => covers[`../../assets/covers/lesson-${pad(n)}.png`]!.default;
+const kindIcon = { pdf: FileText, xlsx: FileSpreadsheet, txt: FileType } as const;
+const kindLabel = { pdf: 'PDF', xlsx: 'Excel', txt: 'Текст' } as const;
+const lessonUrl = (slug: string) => url(`learn/${slug}/`);
+---
+
+<Base title="Ваши уроки — «Выйти из черновиков»" noindex bodyClass="learn">
+  <Header variant="learn" />
+  <main id="main">
+    <section class="lh wrap">
+      <p class="eyebrow">Личный кабинет</p>
+      <h1 class="lh__title">Привет! Это ваш курс «Выйти из&nbsp;черновиков»</h1>
+
+      <div class="pg" data-progress>
+        <div class="pg__top">
+          <p class="pg__count"><span data-pg-done>0</span>&nbsp;из&nbsp;16 <span class="pg__label">уроков пройдено</span></p>
+          <a class="btn btn--rose pg__btn" href={lessonUrl('lesson-00')} data-pg-continue>
+            <span data-pg-continue-label>Начать с&nbsp;урока&nbsp;0</span>
+          </a>
+        </div>
+        <div class="pg__bar" role="progressbar" aria-label="Прогресс курса" aria-valuemin="0" aria-valuemax="16" aria-valuenow="0" data-pg-bar>
+          <span data-pg-fill></span>
+        </div>
+        <p class="pg__hint">Совет: один урок в&nbsp;день и&nbsp;сразу задание. Бот напомнит в&nbsp;10:00 по&nbsp;Москве.</p>
+      </div>
+    </section>
+
+    <section class="lm wrap" aria-label="Уроки по модулям">
+      {
+        modules.map((m) => (
+          <div class="lm__mod" id={`module-${m.lessons[0]!.n}`}>
+            <div class="lm__head">
+              <p class="mono lm__label">{m.label}</p>
+              <h2 class="lm__title">{m.short === 'Старт' ? 'Перед началом' : m.short}</h2>
+            </div>
+            <ul class="lm__grid">
+              {m.lessons.map((l) => (
+                <li>
+                  <a class="lc" href={lessonUrl(l.slug)} data-lesson-card={l.n}>
+                    <span class="lc__img">
+                      <Picture src={cover(l.n)} formats={['avif', 'webp']} widths={[400, 640]} sizes="(min-width: 1100px) 380px, (min-width: 720px) 45vw, 92vw" alt="" loading="lazy" />
+                      <span class="lc__state lc__state--done">
+                        <Check size={14} stroke-width={2.6} aria-hidden="true" /> задание сделано
+                      </span>
+                      <span class="lc__state lc__state--viewed">
+                        <Eye size={14} stroke-width={2.2} aria-hidden="true" /> просмотрен
+                      </span>
+                      <span class="lc__state lc__state--today">урок дня</span>
+                    </span>
+                    <span class="lc__body">
+                      <span class="lc__num mono">Урок {l.n}</span>
+                      <span class="lc__title">{l.title}</span>
+                      <span class="lc__dur mono">{l.duration}</span>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </section>
+
+    <section class="mt wrap" id="materials" aria-labelledby="mt-h">
+      <div class="mt__box">
+        <h2 class="mt__title" id="mt-h">Материалы курса</h2>
+        <ul class="mt__list">
+          {
+            materials.map((m) => {
+              const Icon = kindIcon[m.kind];
+              return (
+                <li>
+                  <a class="mt__item" href={url(m.file)} download={m.download}>
+                    <span class="icon-box mt__ic">
+                      <Icon size={22} stroke-width={1.8} aria-hidden="true" />
+                    </span>
+                    <span class="mt__text">
+                      <span class="mt__name">{m.title}</span>
+                      <span class="mt__note">{m.note}</span>
+                    </span>
+                    <span class="mt__kind mono">{kindLabel[m.kind]}</span>
+                    <Download size={20} stroke-width={1.8} aria-hidden="true" class="mt__dl" />
+                  </a>
+                </li>
+              );
+            })
+          }
+        </ul>
+      </div>
+
+      <div class="help">
+        <span class="icon-box"><MessageCircle size={22} stroke-width={1.8} aria-hidden="true" /></span>
+        <p>
+          Что-то не&nbsp;открывается? <a class="link" href={config.bot.plain}>Напишите в&nbsp;бот</a> или <a class="link" href={config.contacts.telegram}>Регине в&nbsp;Telegram</a>.
+        </p>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>
+
+<script>
+  import { load, nextLesson, TOTAL } from '../../scripts/progress';
+
+  const p = load();
+  const doneCount = p.done.length;
+  const next = nextLesson(p);
+  const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+
+  const set = (sel: string, fn: (el: HTMLElement) => void) => document.querySelectorAll<HTMLElement>(sel).forEach(fn);
+  set('[data-pg-done]', (el) => (el.textContent = String(doneCount)));
+  set('[data-pg-fill]', (el) => (el.style.width = `${(doneCount / TOTAL) * 100}%`));
+  set('[data-pg-bar]', (el) => el.setAttribute('aria-valuenow', String(doneCount)));
+
+  const btn = document.querySelector<HTMLAnchorElement>('[data-pg-continue]');
+  const label = document.querySelector<HTMLElement>('[data-pg-continue-label]');
+  if (btn && label) {
+    if (next === null) {
+      label.textContent = 'Курс пройден — пересмотреть урок 0';
+    } else {
+      btn.href = `${base}learn/lesson-${String(next).padStart(2, '0')}/`;
+      label.textContent = doneCount === 0 && !p.viewed.length ? 'Начать с урока 0' : `Продолжить с урока ${next}`;
+    }
+  }
+
+  set('[data-lesson-card]', (el) => {
+    const n = Number(el.dataset.lessonCard);
+    if (p.done.includes(n)) el.dataset.state = 'done';
+    else if (n === next) el.dataset.state = 'today';
+    else if (p.viewed.includes(n)) el.dataset.state = 'viewed';
+  });
+</script>
+
+<style>
+  .lh {
+    padding-block: clamp(28px, 5vw, 64px) clamp(28px, 4vw, 48px);
+  }
+
+  .lh__title {
+    margin-top: 16px;
+    font-weight: 800;
+    font-size: clamp(34px, 5.6vw, 72px);
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    max-width: 16ch;
+    text-wrap: balance;
+  }
+
+  .pg {
+    margin-top: clamp(28px, 4vw, 44px);
+    padding: clamp(22px, 3vw, 34px);
+    border-radius: var(--r-xl);
+    background: var(--ink);
+    color: var(--on-dark);
+    display: grid;
+    gap: 18px;
+  }
+
+  .pg__top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .pg__count {
+    font-weight: 800;
+    font-size: clamp(32px, 4vw, 48px);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: var(--rose);
+  }
+
+  .pg__label {
+    display: block;
+    margin-top: 6px;
+    font-family: var(--f-mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--on-dark-muted);
+  }
+
+  .pg__btn {
+    flex: 1 1 260px;
+    max-width: 360px;
+  }
+
+  .pg__bar {
+    height: 10px;
+    border-radius: 999px;
+    background: var(--ink-2);
+    overflow: hidden;
+  }
+
+  .pg__bar span {
+    display: block;
+    height: 100%;
+    width: 0;
+    border-radius: inherit;
+    background: var(--rose);
+    transition: width 0.8s var(--ease);
+  }
+
+  .pg__hint {
+    font-size: 15px;
+    color: var(--on-dark-muted);
+  }
+
+  .lm {
+    display: grid;
+    gap: clamp(36px, 5vw, 56px);
+    padding-block: clamp(24px, 4vw, 48px);
+  }
+
+  .lm__head {
+    margin-bottom: 16px;
+  }
+
+  .lm__label {
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .lm__title {
+    margin-top: 6px;
+    font-size: clamp(24px, 2.6vw, 32px);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+  }
+
+  .lm__grid {
+    display: grid;
+    gap: 16px;
+  }
+
+  .lc {
+    display: grid;
+    height: 100%;
+    border-radius: var(--r-lg);
+    background: var(--card);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    text-decoration: none;
+    transition:
+      transform 0.35s var(--ease),
+      box-shadow 0.35s var(--ease);
+  }
+
+  @media (hover: hover) {
+    .lc:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lift);
+    }
+  }
+
+  .lc__img {
+    position: relative;
+    display: block;
+    aspect-ratio: 16 / 9;
+    background: var(--ink);
+  }
+
+  .lc__img :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .lc__state {
+    position: absolute;
+    left: 12px;
+    top: 12px;
+    display: none;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-family: var(--f-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .lc__state--done {
+    background: var(--rose);
+    color: var(--ink);
+  }
+
+  .lc__state--viewed {
+    background: rgba(244, 240, 234, 0.92);
+    color: var(--ink);
+  }
+
+  .lc__state--today {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .lc[data-state='done'] .lc__state--done,
+  .lc[data-state='viewed'] .lc__state--viewed,
+  .lc[data-state='today'] .lc__state--today {
+    display: inline-flex;
+  }
+
+  .lc[data-state='today'] {
+    box-shadow:
+      0 0 0 3px var(--accent),
+      var(--shadow-lift);
+  }
+
+  .lc__body {
+    display: grid;
+    gap: 6px;
+    padding: 18px 20px 22px;
+  }
+
+  .lc__num {
+    font-size: 11.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .lc__title {
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+  }
+
+  .lc__dur {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .mt {
+    padding-block: clamp(24px, 4vw, 48px) var(--section);
+    display: grid;
+    gap: 18px;
+  }
+
+  .mt__box {
+    padding: clamp(22px, 3vw, 36px);
+    border-radius: var(--r-xl);
+    background: var(--card);
+    box-shadow: var(--shadow);
+  }
+
+  .mt__title {
+    font-size: clamp(24px, 2.6vw, 32px);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    margin-bottom: 14px;
+  }
+
+  .mt__list {
+    display: grid;
+  }
+
+  .mt__item {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 4px;
+    border-bottom: 1px solid var(--line);
+    text-decoration: none;
+    border-radius: 12px;
+    transition: background-color 0.2s;
+  }
+
+  .mt__item:hover {
+    background: var(--bg);
+  }
+
+  .mt__text {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .mt__name {
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  .mt__note {
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .mt__kind {
+    font-size: 11px;
+    color: var(--quiet);
+    text-transform: uppercase;
+  }
+
+  .mt__item :global(.mt__dl) {
+    color: var(--accent);
+  }
+
+  .help {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 22px;
+    border-radius: var(--r-md);
+    background: var(--rose-soft);
+  }
+
+  @media (max-width: 719px) {
+    .lc {
+      grid-template-columns: 132px minmax(0, 1fr);
+      align-items: center;
+    }
+
+    .lc__img {
+      height: 100%;
+      aspect-ratio: auto;
+      min-height: 96px;
+    }
+
+    .lc__body {
+      padding: 14px 16px;
+      gap: 4px;
+    }
+
+    .lc__title {
+      font-size: 16px;
+    }
+
+    .lc__state {
+      left: 6px;
+      top: 6px;
+      padding: 4px 7px;
+      font-size: 9px;
+      letter-spacing: 0.04em;
+    }
+
+    .lm__grid {
+      gap: 10px;
+    }
+  }
+
+  @media (max-width: 559px) {
+    .mt__kind {
+      display: none;
+    }
+
+    .mt__item {
+      grid-template-columns: auto 1fr auto;
+    }
+  }
+
+  @media (min-width: 720px) {
+    .lm__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .lm__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

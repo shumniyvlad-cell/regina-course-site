@@ -1,0 +1,80 @@
+---
+import { modules } from '../../data/lessons';
+const items = ['Выйти из черновиков', ...modules.filter((m) => m.key !== 'Старт').map((m) => m.short), '21 день', '12 публикаций'];
+---
+
+<div class="mq" aria-label="Модули курса">
+  <ul class="sr-only">
+    {items.map((t) => <li>{t}</li>)}
+  </ul>
+  <div class="mq__track" aria-hidden="true">
+    {
+      [0, 1].map(() => (
+        <div class="mq__row">
+          {items.map((t) => (
+            <span class="mq__item">
+              {t}
+              <i />
+            </span>
+          ))}
+        </div>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .mq {
+    background: var(--ink);
+    color: var(--on-dark);
+    overflow: hidden;
+    padding-block: 20px;
+    position: relative;
+  }
+
+  .mq__track {
+    display: flex;
+    width: max-content;
+  }
+
+  .mq__row {
+    display: flex;
+    flex: none;
+  }
+
+  .mq__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 28px;
+    padding-right: 28px;
+    font-family: var(--f-mono);
+    font-weight: 500;
+    font-size: clamp(13px, 1.3vw, 16px);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .mq__item i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--rose);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .mq__track {
+      animation: mq 60s linear infinite;
+    }
+
+    .mq:hover .mq__track {
+      animation-play-state: paused;
+    }
+  }
+
+  @keyframes mq {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+</style>

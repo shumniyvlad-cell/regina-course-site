@@ -1,0 +1,93 @@
+import type { Material } from './types';
+
+// Файлы лежат в public/m/ с хешем в имени: StatiCrypt шифрует только HTML,
+// по прямой ссылке файл откроется без пароля. Заменить временные тетради —
+// положить новый файл в public/m/ и поправить запись ниже.
+export const materials: Material[] = [
+  {
+    id: 'notebook-1',
+    title: 'Рабочая тетрадь · неделя 1',
+    note: 'Упаковка: формула, шапка, закрепы',
+    file: 'm/tetrad-1-51c311a8.pdf',
+    download: 'Рабочая тетрадь — неделя 1.pdf',
+    kind: 'pdf',
+    lessons: [1, 2, 3, 4, 5],
+    temporary: true,
+  },
+  {
+    id: 'notebook-2',
+    title: 'Рабочая тетрадь · неделя 2',
+    note: 'Контент-система',
+    file: 'm/tetrad-2-48cb973f.pdf',
+    download: 'Рабочая тетрадь — неделя 2.pdf',
+    kind: 'pdf',
+    lessons: [6, 7, 8, 9, 10],
+    temporary: true,
+  },
+  {
+    id: 'notebook-3',
+    title: 'Рабочая тетрадь · неделя 3',
+    note: 'ИИ, съёмка и заявки',
+    file: 'm/tetrad-3-69e2f6ce.pdf',
+    download: 'Рабочая тетрадь — неделя 3.pdf',
+    kind: 'pdf',
+    lessons: [11, 12, 13, 14, 15],
+    temporary: true,
+  },
+  {
+    id: 'bonus-notebook',
+    title: 'Рабочая тетрадь «Выйти из черновиков»',
+    note: '9 заданий: тема блога, первая идея и шапка',
+    file: 'm/start-903d6eb1.pdf',
+    download: 'Рабочая тетрадь — Выйти из черновиков.pdf',
+    kind: 'pdf',
+    lessons: [0],
+  },
+  {
+    id: 'prompts',
+    title: 'ИИ-промпты к урокам',
+    note: 'Копируйте целиком, меняйте [скобки] на своё',
+    file: 'm/prompts-ffc9f7f2.txt',
+    download: 'ИИ-промпты.txt',
+    kind: 'txt',
+    lessons: [3, 6, 10],
+  },
+  {
+    id: 'content-plan',
+    title: 'Шаблон «Контент-план на месяц»',
+    note: '16 строк, выпадающие списки, банк идей',
+    file: 'm/plan-00572b8b.xlsx',
+    download: 'Контент-план на месяц.xlsx',
+    kind: 'xlsx',
+    lessons: [7],
+  },
+  {
+    id: 'checklist',
+    title: 'Чек-лист шапки профиля',
+    note: 'Проверка профиля за 10 минут',
+    file: 'm/checklist-d722004f.pdf',
+    download: 'Чек-лист шапки профиля.pdf',
+    kind: 'pdf',
+    lessons: [4],
+  },
+  {
+    id: 'ai-helper',
+    title: 'ИИ-помощник для блога',
+    note: '6 готовых промптов: от распаковки до контент-плана',
+    file: 'm/ai-helper-e564a779.pdf',
+    download: 'ИИ-помощник для блога.pdf',
+    kind: 'pdf',
+    lessons: [10],
+  },
+  {
+    id: 'ai-helper-txt',
+    title: 'ИИ-помощник: промпты текстом',
+    note: 'Те же промпты — чтобы копировать',
+    file: 'm/ai-helper-143e7e72.txt',
+    download: 'ИИ-помощник — промпты.txt',
+    kind: 'txt',
+    lessons: [10],
+  },
+];
+
+export const materialsFor = (n: number) => materials.filter((m) => m.lessons.includes(n));

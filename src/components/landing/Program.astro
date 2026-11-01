@@ -1,0 +1,310 @@
+---
+import { typo } from '../../utils/typo';
+import { ChevronDown, Clock } from '@lucide/astro';
+import { modules, pad } from '../../data/lessons';
+
+const nbsp = typo;
+---
+
+<section class="prog section" id="program" aria-labelledby="prog-h">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">Программа</p>
+      <h2 class="h2" id="prog-h">Вводный урок и&nbsp;5&nbsp;модулей</h2>
+    </div>
+
+    <div class="prog__mods">
+      {
+        modules.map((m) => (
+          <div class="mod">
+            <div class="mod__side">
+              <div class="mod__sticky">
+                <p class="mod__label mono">{m.label}</p>
+                <h3 class="mod__title">{m.short === 'Старт' ? 'Перед началом' : m.short}</h3>
+                {m.short !== 'Старт' && <p class="mod__tag">{m.tagline}</p>}
+                <p class="mod__count chip">
+                  {m.lessons.length === 1 ? '1 урок' : `${m.lessons.length} урока`}
+                </p>
+              </div>
+            </div>
+            <ul class="mod__lessons">
+              {m.lessons.map((l) => (
+                <li class="les" data-acc>
+                  <h4 class="les__h">
+                    <button type="button" class="les__btn" aria-expanded="false" aria-controls={`les-${l.n}`} id={`les-btn-${l.n}`} data-acc-btn>
+                      <span class="les__num mono">{pad(l.n)}</span>
+                      <span class="les__title">{nbsp(l.title)}</span>
+                      <span class="les__dur chip">{l.duration.replace(' ', ' ')}</span>
+                      <span class="les__chev" aria-hidden="true">
+                        <ChevronDown size={22} stroke-width={2} />
+                      </span>
+                    </button>
+                  </h4>
+                  <div class="les__panel" id={`les-${l.n}`} role="region" aria-labelledby={`les-btn-${l.n}`} data-acc-panel>
+                    <div class="les__inner">
+                      <div class="les__body">
+                        <p class="les__sub">{nbsp(l.subtitle.replace(/^Урок 0 · /, ''))}</p>
+                        <p class="les__k mono">Что внутри</p>
+                        <ul class="les__inside">
+                          {l.inside.map((t) => <li>{t}</li>)}
+                        </ul>
+                        <p class="les__task">
+                          <span class="les__task-k">
+                            <Clock size={15} stroke-width={2} aria-hidden="true" /> Задание · {l.task.time}
+                          </span>
+                          {l.task.items[0]}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .prog__mods {
+    display: grid;
+    gap: clamp(36px, 5vw, 56px);
+  }
+
+  .mod {
+    display: grid;
+    gap: 18px;
+  }
+
+  .mod__label {
+    font-size: 12.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .mod__title {
+    margin-top: 8px;
+    font-size: clamp(26px, 3vw, 36px);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+  }
+
+  .mod__tag {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 16px;
+  }
+
+  .mod__count {
+    margin-top: 16px;
+    display: none;
+  }
+
+  .mod__lessons {
+    display: grid;
+    gap: 10px;
+    align-content: start;
+  }
+
+  .les {
+    background: var(--card);
+    border-radius: var(--r-md);
+    box-shadow: 0 10px 26px rgba(47, 43, 39, 0.05);
+    transition: box-shadow 0.3s var(--ease);
+  }
+
+  .les.is-open {
+    box-shadow: var(--shadow-lift);
+  }
+
+  .les__h {
+    font: inherit;
+  }
+
+  .les__btn {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      'num title chev'
+      'num dur chev';
+    column-gap: 16px;
+    row-gap: 8px;
+    align-items: center;
+    width: 100%;
+    min-height: 72px;
+    padding: 16px 18px;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    border-radius: var(--r-md);
+  }
+
+  .les__num {
+    grid-area: num;
+    align-self: start;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: var(--rose-soft);
+    color: var(--accent);
+    font-size: 15px;
+  }
+
+  .les__title {
+    grid-area: title;
+    font-weight: 700;
+    font-size: 17.5px;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+  }
+
+  .les__dur {
+    grid-area: dur;
+    justify-self: start;
+    height: 26px;
+    padding: 0 10px;
+    font-size: 11px;
+  }
+
+  .les__chev {
+    grid-area: chev;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--bg);
+    transition:
+      transform 0.35s var(--ease),
+      background-color 0.25s;
+  }
+
+  .les.is-open .les__chev {
+    transform: rotate(180deg);
+    background: var(--rose);
+  }
+
+  .les__panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.45s var(--ease);
+  }
+
+  .les.is-open .les__panel {
+    grid-template-rows: 1fr;
+  }
+
+  .les__inner {
+    overflow: hidden;
+    min-height: 0;
+    visibility: hidden;
+    transition: visibility 0s 0.45s;
+  }
+
+  .les.is-open .les__inner {
+    visibility: visible;
+    transition: visibility 0s;
+  }
+
+  .les__body {
+    padding: 0 18px 22px;
+    display: grid;
+    gap: 12px;
+  }
+
+  .les__sub {
+    color: var(--muted);
+    font-size: 16px;
+  }
+
+  .les__k {
+    margin-top: 6px;
+    font-size: 11.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--quiet);
+  }
+
+  .les__inside {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .les__inside li {
+    padding: 7px 12px;
+    border-radius: 12px;
+    background: var(--bg);
+    font-size: 14.5px;
+    font-weight: 500;
+  }
+
+  .les__task {
+    margin-top: 6px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: var(--ink);
+    color: var(--on-dark);
+    font-size: 15px;
+    line-height: 1.45;
+  }
+
+  .les__task-k {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+    font-family: var(--f-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--rose);
+  }
+
+  @media (min-width: 720px) {
+    .les__btn {
+      grid-template-columns: auto 1fr auto auto;
+      grid-template-areas: 'num title dur chev';
+      padding: 16px 22px;
+    }
+
+    .les__num {
+      align-self: center;
+    }
+
+    .les__body {
+      padding: 0 22px 24px 82px;
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .mod {
+      grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
+      gap: 48px;
+    }
+
+    .mod__sticky {
+      position: sticky;
+      top: calc(var(--header-h) + 28px);
+    }
+
+    .mod__count {
+      display: inline-flex;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .les__panel,
+    .les__chev {
+      transition: none;
+    }
+  }
+</style>

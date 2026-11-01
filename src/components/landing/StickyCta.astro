@@ -1,0 +1,47 @@
+---
+import { config, rub, presaleActiveAtBuild } from '../../config';
+const from = presaleActiveAtBuild() ? config.prices.samaStart : config.prices.sama;
+---
+
+<div class="stk" data-sticky aria-hidden="true">
+  <a class="btn stk__btn" href={config.bot.main} tabindex="-1">
+    Начать курс · от&nbsp;<span data-sticky-price>{rub(from)}</span>
+  </a>
+</div>
+
+<style>
+  .stk {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 40;
+    padding: 10px max(16px, env(safe-area-inset-left, 0px)) calc(10px + env(safe-area-inset-bottom, 0px));
+    background: linear-gradient(to top, rgba(244, 240, 234, 0.96) 60%, rgba(244, 240, 234, 0));
+    transform: translateY(110%);
+    transition: transform 0.4s var(--ease);
+    pointer-events: none;
+  }
+
+  .stk.is-shown {
+    transform: none;
+    pointer-events: auto;
+  }
+
+  .stk__btn {
+    width: 100%;
+    box-shadow: 0 12px 30px rgba(47, 43, 39, 0.25);
+  }
+
+  @media (min-width: 960px) {
+    .stk {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stk {
+      transition: none;
+    }
+  }
+</style>

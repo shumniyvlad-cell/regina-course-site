@@ -1,0 +1,202 @@
+---
+import { Picture } from 'astro:assets';
+import { ArrowLeft, ArrowRight } from '@lucide/astro';
+
+const files = import.meta.glob<{ default: ImageMetadata }>('../../assets/slides/*.png', { eager: true });
+const alts = [
+  'Слайд урока 1: «Блог стоит не из-за лени»',
+  'Слайд урока 1: «Было — стало», голос страха и голос автора',
+  'Слайд урока 4: «Профиль отвечает на три вопроса»',
+  'Слайд урока 4: шапка в три строки',
+  'Слайд урока 8: «30 секунд по секундам» — схема рилс',
+  'Слайд урока 7: как заполнить контент-план',
+  'Слайд урока 10: как разговаривать с нейросетью',
+  'Слайд урока 4: задание «Что сделать сегодня»',
+];
+const slides = Object.keys(files)
+  .sort()
+  .map((k, i) => ({ src: files[k]!.default, alt: alts[i] ?? 'Слайд урока' }));
+---
+
+<section class="sl section dark" aria-labelledby="sl-h">
+  <div class="wrap sl__head">
+    <div class="head">
+      <p class="eyebrow">Внутри урока</p>
+      <h2 class="h2" id="sl-h">Так выглядят уроки</h2>
+      <p class="lead">Слайды, примеры и&nbsp;Регина в&nbsp;кадре. Каждый урок заканчивается заданием.</p>
+    </div>
+    <div class="sl__nav">
+      <button type="button" class="sl__btn" data-sl-prev aria-label="Предыдущий слайд">
+        <ArrowLeft size={22} stroke-width={2} aria-hidden="true" />
+      </button>
+      <button type="button" class="sl__btn" data-sl-next aria-label="Следующий слайд">
+        <ArrowRight size={22} stroke-width={2} aria-hidden="true" />
+      </button>
+    </div>
+  </div>
+
+  <div class="sl__track" data-sl-track tabindex="0" aria-label="Слайды уроков, листаются вбок" role="region">
+    <ul class="sl__list">
+      {
+        slides.map((s) => (
+          <li class="sl__item">
+            <Picture
+              src={s.src}
+              formats={['avif', 'webp']}
+              widths={[480, 800, 1200, 1600]}
+              sizes="(min-width: 1100px) 860px, 86vw"
+              alt={s.alt}
+              loading="lazy"
+              decoding="async"
+              draggable="false"
+            />
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-sl-track]').forEach((track) => {
+    const section = track.closest('section');
+    const step = () => (track.querySelector('li')?.getBoundingClientRect().width ?? 600) + 20;
+    section?.querySelector('[data-sl-prev]')?.addEventListener('click', () => track.scrollBy({ left: -step(), behavior: 'smooth' }));
+    section?.querySelector('[data-sl-next]')?.addEventListener('click', () => track.scrollBy({ left: step(), behavior: 'smooth' }));
+
+    // перетаскивание мышью на десктопе
+    let down = false;
+    let startX = 0;
+    let startLeft = 0;
+    let moved = false;
+    track.addEventListener('pointerdown', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      down = true;
+      moved = false;
+      startX = e.clientX;
+      startLeft = track.scrollLeft;
+      track.classList.add('is-drag');
+    });
+    window.addEventListener('pointermove', (e) => {
+      if (!down) return;
+      const dx = e.clientX - startX;
+      if (Math.abs(dx) > 4) moved = true;
+      track.scrollLeft = startLeft - dx;
+    });
+    const end = () => {
+      if (!down) return;
+      down = false;
+      track.classList.remove('is-drag');
+      // мягко докатываем до ближайшего слайда
+      const s = step();
+      track.scrollTo({ left: Math.round(track.scrollLeft / s) * s, behavior: 'smooth' });
+    };
+    window.addEventListener('pointerup', end);
+    track.addEventListener('click', (e) => moved && e.preventDefault(), true);
+  });
+</script>
+
+<style>
+  .sl {
+    background: var(--ink);
+    color: var(--on-dark);
+    overflow: hidden;
+  }
+
+  .sl__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .sl__nav {
+    display: none;
+    gap: 10px;
+    margin-bottom: clamp(36px, 5vw, 64px);
+  }
+
+  .sl__btn {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 0;
+    background: var(--rose);
+    color: var(--ink);
+    cursor: pointer;
+    transition: transform 0.25s var(--ease);
+  }
+
+  .sl__btn:hover {
+    transform: scale(1.06);
+  }
+
+  .sl__track {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+    cursor: grab;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .sl__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .sl__track.is-drag {
+    cursor: grabbing;
+    scroll-snap-type: none;
+    user-select: none;
+  }
+
+  .sl__track:focus-visible {
+    outline-offset: -3px;
+  }
+
+  .sl__list {
+    --pad: max(var(--gutter), calc((100vw - var(--maxw)) / 2));
+    display: flex;
+    gap: 20px;
+    padding-inline: var(--pad);
+    width: max-content;
+  }
+
+  .sl__item {
+    position: relative;
+    flex: none;
+    width: min(86vw, 860px);
+    aspect-ratio: 16 / 9;
+    border-radius: clamp(16px, 2.2vw, 28px);
+    overflow: hidden;
+    scroll-snap-align: center;
+    background: #3a342f;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.28);
+  }
+
+  .sl__item :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+  }
+
+  .sl__count {
+    position: absolute;
+    right: 14px;
+    bottom: 12px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: rgba(47, 43, 39, 0.7);
+    color: var(--on-dark);
+    font-size: 11px;
+  }
+
+  @media (min-width: 720px) {
+    .sl__nav {
+      display: flex;
+    }
+  }
+</style>

@@ -1,0 +1,90 @@
+---
+import Base from './Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  updated: string;
+}
+const { title, description, updated } = Astro.props;
+---
+
+<Base title={`${title} — «Выйти из черновиков»`} description={description}>
+  <Header />
+  <main id="main" class="doc wrap">
+    <p class="eyebrow">Документы</p>
+    <h1 class="doc__title">{title}</h1>
+    <p class="doc__upd mono">Редакция от {updated}</p>
+    <article class="doc__body">
+      <slot />
+    </article>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .doc {
+    padding-block: clamp(32px, 6vw, 72px) var(--section);
+    max-width: calc(820px + var(--gutter) * 2);
+  }
+
+  .doc__title {
+    margin-top: 16px;
+    font-weight: 800;
+    font-size: clamp(32px, 5vw, 56px);
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
+
+  .doc__upd {
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .doc__body {
+    margin-top: 36px;
+    padding: clamp(24px, 4vw, 48px);
+    border-radius: var(--r-xl);
+    background: var(--card);
+    box-shadow: var(--shadow);
+    font-size: 16.5px;
+    line-height: 1.65;
+  }
+
+  .doc__body :global(h2) {
+    font-size: 21px;
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+    margin: 32px 0 10px;
+  }
+
+  .doc__body :global(h2:first-child) {
+    margin-top: 0;
+  }
+
+  .doc__body :global(p),
+  .doc__body :global(li) {
+    color: #4a433d;
+  }
+
+  .doc__body :global(p + p) {
+    margin-top: 10px;
+  }
+
+  .doc__body :global(ol),
+  .doc__body :global(ul) {
+    display: grid;
+    gap: 8px;
+    padding-left: 22px;
+    list-style: decimal;
+  }
+
+  .doc__body :global(ul) {
+    list-style: disc;
+  }
+</style>

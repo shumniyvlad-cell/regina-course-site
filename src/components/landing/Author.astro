@@ -1,0 +1,665 @@
+---
+import { Picture, getImage } from 'astro:assets';
+import { Check, Expand, X, ArrowLeft, ArrowRight } from '@lucide/astro';
+import portrait from '../../assets/photos/05_portrait_tie_portfolio.jpg';
+import group from '../../assets/photos/03_meetup_group.jpg';
+
+const pages = import.meta.glob<{ default: ImageMetadata }>('../../assets/cases/*.jpg', { eager: true });
+const page = (p: string) => pages[`../../assets/cases/${p}.jpg`]!.default;
+
+const cases = [
+  {
+    name: 'Ресторан «Хачапури Марико»',
+    place: 'Нефтекамск',
+    task: 'Соцсети грузинского ресторана с нуля: VK и Instagram*, узнаваемость, новые гости.',
+    big: '878 812',
+    bigNote: 'просмотров по статистике Instagram*',
+    small: '82,4% просмотров — не подписчики',
+    cover: 'p05',
+    pages: ['p03', 'p04', 'p05'],
+  },
+  {
+    name: 'Падел-клуб',
+    place: 'Нефтекамск',
+    task: 'Запустить и развить новый клуб с нуля в Telegram, Instagram* и VK.',
+    big: '705 867',
+    bigNote: 'просмотров по статистике Instagram*',
+    small: '84,2% — не подписчики',
+    cover: 'p08',
+    pages: ['p06', 'p07', 'p08'],
+  },
+  {
+    name: 'Цветочный дом',
+    place: 'Владивосток',
+    task: 'Узнаваемость и заказы через контент и локальные активности.',
+    big: '5 893 → 241 145',
+    bigNote: 'просмотров за 30 дней: в начале работы и спустя 3 месяца',
+    small: 'Охваченные аккаунты: 4 061 → 20 134',
+    cover: 'p12',
+    pages: ['p09', 'p10', 'p11', 'p12'],
+  },
+  {
+    name: 'Кафе «Кинзаза»',
+    place: 'Нефтекамск',
+    task: 'Обновить визуал и меню, усилить рилс, привлечь узнаваемых людей города.',
+    big: 'до 300 000',
+    bigNote: 'просмотров рилс во ВКонтакте',
+    small: 'В Instagram* — от 1 000 до 14 000 просмотров',
+    cover: 'p15',
+    pages: ['p13', 'p14', 'p15'],
+  },
+];
+
+const gallery = await Promise.all(
+  cases.map(async (c) => ({
+    title: c.name,
+    images: await Promise.all(
+      c.pages.map(async (p) => (await getImage({ src: page(p), width: 1920, format: 'webp', quality: 82 })).src),
+    ),
+  })),
+);
+
+const facts = [
+  { value: 2024, prefix: 'с ', suffix: '', label: 'года в SMM', count: false },
+  { value: 10, prefix: '', suffix: '+', label: 'проектов', count: true },
+  { value: 1000, prefix: '', suffix: '+', label: 'единиц контента', count: true },
+];
+
+const points = [
+  'Ведёт соцсети крупных проектов и франшиз Нефтекамска',
+  'Работала с артистами, которые приезжали в город',
+  'Проводит встречи и мини-группы «Выйти из черновиков»',
+  'Учит вести блог с телефона, с ИИ и без монтажёра',
+];
+---
+
+<section class="au section" id="author" aria-labelledby="au-h">
+  <div class="wrap">
+    <div class="au__grid">
+      <div class="au__media" data-reveal>
+        <span class="au__circle" aria-hidden="true"></span>
+        <figure class="au__photo" data-parallax>
+          <Picture
+            src={portrait}
+            formats={['avif', 'webp']}
+            widths={[360, 560, 820]}
+            sizes="(min-width: 1100px) 34vw, 80vw"
+            alt="Регина Репортёр — деловой портрет в белом костюме с бордовым галстуком"
+            loading="lazy"
+            decoding="async"
+          />
+          <figcaption class="pill">Основательница VMEDIA</figcaption>
+        </figure>
+      </div>
+
+      <div class="au__text">
+        <p class="eyebrow">Автор курса</p>
+        <h2 class="h2" id="au-h">Регина Репортёр</h2>
+        <p class="lead au__lead">
+          Основательница SMM-агентства VMEDIA из&nbsp;Нефтекамска. Знает, как блог приводит клиентов, потому что делает это каждый день для бизнеса.
+        </p>
+        <blockquote class="au__quote">
+          <p>
+            «Я&nbsp;веду соцсети бизнеса каждый день: рестораны, спортивный клуб, цветочный дом, загородный комплекс. Знаю, как блог приводит клиентов, — и&nbsp;знаю, почему у&nbsp;большинства он так и&nbsp;остаётся в&nbsp;черновиках. В&nbsp;этом курсе я&nbsp;собрала всё, что даю клиентам агентства и&nbsp;участницам своих групп, в&nbsp;маленькие шаги, которые можно сделать с&nbsp;телефона за&nbsp;<span class="nowrap">30–40&nbsp;минут</span> в&nbsp;день».
+          </p>
+        </blockquote>
+
+        <ul class="au__facts">
+          {
+            facts.map((f) => (
+              <li>
+                <span class="au__fact-v">
+                  {f.prefix}
+                  <span data-count={f.count ? f.value : undefined}>{f.value}</span>
+                  {f.suffix}
+                </span>
+                <span class="au__fact-l">{f.label}</span>
+              </li>
+            ))
+          }
+        </ul>
+
+        <ul class="au__points">
+          {
+            points.map((p) => (
+              <li>
+                <Check size={18} stroke-width={2.4} aria-hidden="true" />
+                {p}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+
+    <figure class="au__wide" data-reveal>
+      <Picture
+        src={group}
+        formats={['avif', 'webp']}
+        widths={[640, 1080]}
+        sizes="(min-width: 1240px) 1240px, 100vw"
+        alt="Встреча «Выйти из черновиков»: участницы за столом снимают контент, Регина Репортёр справа"
+        loading="lazy"
+        decoding="async"
+      />
+      <figcaption class="pill">Встреча «Выйти из&nbsp;черновиков»</figcaption>
+    </figure>
+
+    <div class="cases">
+      <div class="head cases__head">
+        <h3 class="h2 cases__title">Кейсы агентства</h3>
+        <p class="lead">Этому курсу можно доверять, потому что всё в&nbsp;нём проверено на&nbsp;бизнесах, которые ведёт агентство.</p>
+      </div>
+
+      <ul class="cases__list">
+        {
+          cases.map((c, i) => (
+            <li class="case" style={`--i:${i}`} data-reveal>
+              <button type="button" class="case__btn" data-case={i} aria-haspopup="dialog">
+                <span class="case__img">
+                  <Picture
+                    src={page(c.cover)}
+                    formats={['avif', 'webp']}
+                    widths={[480, 800]}
+                    sizes="(min-width: 1100px) 600px, 92vw"
+                    alt={`Страница портфолио: результат кейса «${c.name}»`}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <span class="case__open">
+                    <Expand size={16} stroke-width={2} aria-hidden="true" /> {c.pages.length}&nbsp;стр.
+                  </span>
+                </span>
+                <span class="case__body">
+                  <span class="case__place mono">{c.place}</span>
+                  <span class="case__name">{c.name}</span>
+                  <span class="case__task">{c.task}</span>
+                  <span class="case__big">{c.big}</span>
+                  <span class="case__big-note">{c.bigNote}</span>
+                  <span class="case__small">{c.small}</span>
+                </span>
+              </button>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="cases__note">Цифры — со&nbsp;скринов статистики в&nbsp;портфолио агентства.</p>
+    </div>
+  </div>
+
+  <dialog class="lb" data-lb aria-label="Страницы портфолио">
+    <div class="lb__bar">
+      <p class="lb__title" data-lb-title></p>
+      <p class="lb__count mono" data-lb-count></p>
+      <button type="button" class="lb__btn" data-lb-close aria-label="Закрыть">
+        <X size={22} stroke-width={2} aria-hidden="true" />
+      </button>
+    </div>
+    <div class="lb__stage">
+      <button type="button" class="lb__btn lb__prev" data-lb-prev aria-label="Предыдущая страница">
+        <ArrowLeft size={22} stroke-width={2} aria-hidden="true" />
+      </button>
+      <img data-lb-img alt="" width="1920" height="1080" />
+      <button type="button" class="lb__btn lb__next" data-lb-next aria-label="Следующая страница">
+        <ArrowRight size={22} stroke-width={2} aria-hidden="true" />
+      </button>
+    </div>
+  </dialog>
+  <script type="application/json" data-lb-data set:html={JSON.stringify(gallery)} />
+</section>
+
+<script>
+  type Gallery = { title: string; images: string[] }[];
+  const dlg = document.querySelector<HTMLDialogElement>('[data-lb]');
+  const data = JSON.parse(document.querySelector('[data-lb-data]')?.textContent ?? '[]') as Gallery;
+  const img = dlg?.querySelector<HTMLImageElement>('[data-lb-img]');
+  const title = dlg?.querySelector<HTMLElement>('[data-lb-title]');
+  const count = dlg?.querySelector<HTMLElement>('[data-lb-count]');
+  let current = 0;
+  let pageIdx = 0;
+  let opener: HTMLElement | null = null;
+
+  const render = () => {
+    const g = data[current];
+    if (!g || !img || !title || !count) return;
+    img.src = g.images[pageIdx] ?? '';
+    img.alt = `${g.title} — страница ${pageIdx + 1} из ${g.images.length}`;
+    title.textContent = g.title;
+    count.textContent = `${pageIdx + 1} / ${g.images.length}`;
+  };
+  const go = (d: number) => {
+    const g = data[current];
+    if (!g) return;
+    pageIdx = (pageIdx + d + g.images.length) % g.images.length;
+    render();
+  };
+
+  document.querySelectorAll<HTMLButtonElement>('[data-case]').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      current = Number(btn.dataset.case);
+      const g = data[current];
+      pageIdx = g ? g.images.length - 1 : 0; // начинаем со страницы с результатом
+      opener = btn;
+      render();
+      dlg?.showModal();
+    }),
+  );
+  dlg?.querySelector('[data-lb-close]')?.addEventListener('click', () => dlg.close());
+  dlg?.querySelector('[data-lb-prev]')?.addEventListener('click', () => go(-1));
+  dlg?.querySelector('[data-lb-next]')?.addEventListener('click', () => go(1));
+  dlg?.addEventListener('click', (e) => {
+    if (e.target === dlg) dlg.close();
+  });
+  dlg?.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') go(-1);
+    if (e.key === 'ArrowRight') go(1);
+  });
+  dlg?.addEventListener('close', () => opener?.focus());
+
+  // счётчики от нуля при появлении
+  const counters = document.querySelectorAll<HTMLElement>('[data-count]');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduce && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const el = entry.target as HTMLElement;
+          io.unobserve(el);
+          const target = Number(el.dataset.count);
+          const t0 = performance.now();
+          const dur = 1400;
+          const tick = (t: number) => {
+            const p = Math.min(1, (t - t0) / dur);
+            el.textContent = String(Math.round(target * (1 - Math.pow(1 - p, 3))));
+            if (p < 1) requestAnimationFrame(tick);
+          };
+          el.textContent = '0';
+          requestAnimationFrame(tick);
+        });
+      },
+      { threshold: 0.6 },
+    );
+    counters.forEach((c) => io.observe(c));
+  }
+</script>
+
+<style>
+  .au {
+    background: var(--rose-soft);
+  }
+
+  .au__grid {
+    display: grid;
+    gap: 44px;
+  }
+
+  .au__media {
+    position: relative;
+    max-width: 440px;
+    width: 88%;
+    justify-self: center;
+  }
+
+  .au__circle {
+    position: absolute;
+    width: 70%;
+    aspect-ratio: 1;
+    left: -18%;
+    bottom: -8%;
+    border-radius: 50%;
+    background: var(--rose);
+  }
+
+  .au__photo {
+    position: relative;
+    border-radius: var(--r-xl);
+    overflow: hidden;
+    aspect-ratio: 820 / 1229;
+    box-shadow: var(--shadow-lift);
+    background: #4a3426;
+  }
+
+  .au__photo :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .pill {
+    position: absolute;
+    left: 16px;
+    bottom: 16px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(47, 43, 39, 0.55);
+    color: #fff;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    font-family: var(--f-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .au__text {
+    display: grid;
+    gap: 20px;
+    align-content: start;
+  }
+
+  .au__lead {
+    color: var(--ink);
+  }
+
+  .au__quote {
+    position: relative;
+    padding: 24px 24px 24px 26px;
+    border-radius: var(--r-md);
+    background: var(--card);
+    box-shadow: var(--shadow);
+    font-size: 16.5px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+
+  .au__quote::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 22px;
+    bottom: 22px;
+    width: 3px;
+    border-radius: 2px;
+    background: var(--accent);
+  }
+
+  .au__facts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 6px;
+  }
+
+  .au__facts li {
+    display: grid;
+    gap: 4px;
+    padding: 16px 14px;
+    border-radius: var(--r-md);
+    background: var(--ink);
+    color: var(--on-dark);
+  }
+
+  .au__fact-v {
+    font-weight: 800;
+    font-size: clamp(24px, 3.2vw, 38px);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: var(--rose);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .au__fact-l {
+    font-family: var(--f-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--on-dark-muted);
+  }
+
+  .au__points {
+    display: grid;
+    gap: 10px;
+  }
+
+  .au__points li {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-weight: 500;
+  }
+
+  .au__points :global(svg) {
+    flex: none;
+    margin-top: 3px;
+    color: var(--accent);
+  }
+
+  .au__wide {
+    position: relative;
+    margin-top: clamp(48px, 7vw, 88px);
+    border-radius: var(--r-xl);
+    overflow: hidden;
+    aspect-ratio: 1080 / 403;
+    background: #5b6a4e;
+  }
+
+  .au__wide :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* ---- кейсы ---- */
+  .cases {
+    margin-top: clamp(64px, 9vw, 120px);
+  }
+
+  .cases__title {
+    font-size: clamp(30px, 4vw, 48px);
+  }
+
+  .cases__list {
+    display: grid;
+    gap: 18px;
+  }
+
+  .case__btn {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    text-align: left;
+    background: var(--card);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    cursor: zoom-in;
+    transition:
+      transform 0.35s var(--ease),
+      box-shadow 0.35s var(--ease);
+  }
+
+  @media (hover: hover) {
+    .case__btn:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lift);
+    }
+  }
+
+  .case__img {
+    position: relative;
+    display: block;
+    aspect-ratio: 16 / 9;
+    background: #7a1420;
+  }
+
+  .case__img :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .case__open {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.92);
+    font-family: var(--f-mono);
+    font-size: 11.5px;
+    font-weight: 500;
+  }
+
+  .case__body {
+    display: grid;
+    gap: 6px;
+    padding: 22px 24px 26px;
+  }
+
+  .case__place {
+    font-size: 11.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .case__name {
+    font-weight: 800;
+    font-size: 21px;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .case__task {
+    color: var(--muted);
+    font-size: 15.5px;
+    margin-bottom: 10px;
+  }
+
+  .case__big {
+    font-weight: 800;
+    font-size: clamp(28px, 3.4vw, 38px);
+    letter-spacing: -0.035em;
+    line-height: 1.05;
+  }
+
+  .case__big-note {
+    font-size: 14.5px;
+    color: var(--muted);
+  }
+
+  .case__small {
+    margin-top: 8px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+    font-size: 14.5px;
+    font-weight: 600;
+  }
+
+  .cases__note {
+    margin-top: 18px;
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+
+  /* ---- лайтбокс ---- */
+  .lb {
+    width: min(1200px, 100vw - 24px);
+    max-width: none;
+    max-height: calc(100dvh - 24px);
+    padding: 0;
+    border: 0;
+    border-radius: var(--r-lg);
+    background: var(--ink);
+    color: var(--on-dark);
+    overflow: hidden;
+  }
+
+  .lb::backdrop {
+    background: rgba(30, 26, 23, 0.78);
+    backdrop-filter: blur(6px);
+  }
+
+  .lb__bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 10px 10px 22px;
+  }
+
+  .lb__title {
+    font-weight: 700;
+    margin-right: auto;
+  }
+
+  .lb__count {
+    font-size: 13px;
+    color: var(--on-dark-muted);
+  }
+
+  .lb__btn {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(244, 240, 234, 0.1);
+    color: var(--on-dark);
+    cursor: pointer;
+    flex: none;
+  }
+
+  .lb__btn:hover {
+    background: var(--rose);
+    color: var(--ink);
+  }
+
+  .lb__stage {
+    position: relative;
+    padding: 0 10px 10px;
+  }
+
+  .lb__stage img {
+    width: 100%;
+    height: auto;
+    max-height: calc(100dvh - 110px);
+    object-fit: contain;
+    border-radius: calc(var(--r-lg) - 10px);
+  }
+
+  .lb__prev,
+  .lb__next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(47, 43, 39, 0.7);
+  }
+
+  .lb__prev {
+    left: 20px;
+  }
+
+  .lb__next {
+    right: 20px;
+  }
+
+  @media (min-width: 720px) {
+    .cases__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px;
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .au__grid {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+      gap: 72px;
+      align-items: center;
+    }
+
+    .au__media {
+      width: 100%;
+    }
+  }
+</style>

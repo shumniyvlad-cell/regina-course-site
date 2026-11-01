@@ -1,0 +1,72 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Hero from '../components/landing/Hero.astro';
+import Marquee from '../components/landing/Marquee.astro';
+import Pains from '../components/landing/Pains.astro';
+import Audience from '../components/landing/Audience.astro';
+import Results from '../components/landing/Results.astro';
+import HowItWorks from '../components/landing/HowItWorks.astro';
+import Slides from '../components/landing/Slides.astro';
+import Program from '../components/landing/Program.astro';
+import Author from '../components/landing/Author.astro';
+import Reviews from '../components/landing/Reviews.astro';
+import Pricing from '../components/landing/Pricing.astro';
+import Pay from '../components/landing/Pay.astro';
+import Faq from '../components/landing/Faq.astro';
+import Final from '../components/landing/Final.astro';
+import StickyCta from '../components/landing/StickyCta.astro';
+import Trailer from '../components/landing/Trailer.astro';
+import { config } from '../config';
+
+const title = `«${config.brand.course}» — видеокурс Регины Репортёр`;
+const description = `${config.brand.tagline} 16 видеоуроков по 6–12 минут, задание после каждого урока, контент-план и 12 публикаций за 21 день.`;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Course',
+  name: config.brand.course,
+  description: config.brand.tagline,
+  inLanguage: 'ru',
+  url: new URL(import.meta.env.BASE_URL, Astro.site).href,
+  author: { '@type': 'Person', name: config.brand.author, jobTitle: 'Основательница SMM-агентства VMEDIA' },
+  provider: { '@type': 'Person', name: config.brand.author, sameAs: [config.contacts.telegram] },
+  hasCourseInstance: {
+    '@type': 'CourseInstance',
+    courseMode: 'online',
+    courseWorkload: 'P21D',
+  },
+  offers: [
+    { '@type': 'Offer', name: 'Сама', price: config.prices.sama, priceCurrency: 'RUB', category: 'Paid', url: config.bot.sama },
+    { '@type': 'Offer', name: 'С разбором', price: config.prices.razbor, priceCurrency: 'RUB', category: 'Paid', url: config.bot.razbor },
+  ],
+};
+---
+
+<Base title={title} description={description} jsonLd={jsonLd}>
+  <Header />
+  <main id="main">
+    <Hero />
+    <Marquee />
+    <Pains />
+    <Audience />
+    <Results />
+    <HowItWorks />
+    <Slides />
+    <Program />
+    <Author />
+    {config.flags.showReviews && <Reviews />}
+    <Pricing />
+    <Pay />
+    <Faq />
+    <Final />
+  </main>
+  <Footer />
+  <StickyCta />
+  {config.flags.showTrailer && <Trailer />}
+</Base>
+
+<script>
+  import '../scripts/landing.ts';
+</script>

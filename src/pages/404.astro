@@ -1,0 +1,66 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { config, url } from '../config';
+---
+
+<Base title="Страница не найдена — «Выйти из черновиков»" noindex>
+  <Header />
+  <main id="main" class="nf wrap">
+    <span class="nf__c" aria-hidden="true"></span>
+    <p class="eyebrow">Ошибка 404</p>
+    <h1 class="nf__h">Эта страница ещё в&nbsp;черновиках</h1>
+    <p class="lead">Ссылка устарела или в&nbsp;ней опечатка. Начните с&nbsp;главной или напишите в&nbsp;бот курса.</p>
+    <div class="nf__cta">
+      <a class="btn" href={url('')}>На главную</a>
+      <a class="btn btn--ghost" href={config.bot.main}>Открыть бот</a>
+    </div>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .nf {
+    position: relative;
+    min-height: 70vh;
+    display: grid;
+    align-content: center;
+    gap: 22px;
+    padding-block: clamp(48px, 10vw, 140px);
+    overflow: hidden;
+  }
+
+  .nf__h {
+    font-weight: 800;
+    font-size: clamp(40px, 7vw, 96px);
+    line-height: 0.98;
+    letter-spacing: -0.045em;
+    max-width: 12ch;
+    position: relative;
+  }
+
+  .nf .lead,
+  .nf__cta,
+  .nf .eyebrow {
+    position: relative;
+  }
+
+  .nf__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .nf__c {
+    position: absolute;
+    width: clamp(220px, 34vw, 480px);
+    aspect-ratio: 1;
+    right: -6%;
+    top: 12%;
+    border-radius: 50%;
+    background: var(--rose);
+    opacity: 0.6;
+  }
+</style>

@@ -1,0 +1,247 @@
+---
+import { typo } from '../../utils/typo';
+import { Check, ArrowUpRight } from '@lucide/astro';
+import { config, rub, presaleActiveAtBuild } from '../../config';
+
+const { prices, presale, bot } = config;
+const presaleOn = presaleActiveAtBuild();
+const untilLabel = new Date(presale.until).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', timeZone: 'Europe/Moscow' });
+
+const sama = ['16 видеоуроков', 'Рабочая тетрадь и ИИ-промпты', 'Шаблон контент-плана и чек-лист шапки', 'Доступ на 12 месяцев'];
+const razbor = ['Всё из тарифа «Сама»', 'Разбор профиля от команды VMEDIA', 'Разбор двух ваших роликов', 'Закрытый чат курса с ответами команды на 21 день'];
+const nb = typo;
+---
+
+<section class="pr section" id="pricing" aria-labelledby="pr-h">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">Тарифы</p>
+      <h2 class="h2" id="pr-h">Выберите, как пройти курс</h2>
+      <p class="lead">Оба тарифа — те же 16&nbsp;уроков и&nbsp;материалы. Разница в&nbsp;том, смотрит&nbsp;ли ваши работы команда.</p>
+    </div>
+
+    <div class="pr__cards">
+      <article class="plan" data-reveal>
+        <h3 class="plan__name">Сама</h3>
+        <div class="plan__price" data-presale-block data-presale-until={presale.enabled ? presale.until : undefined} data-label-start={rub(prices.samaStart)} data-label-regular={rub(prices.sama)}>
+          <!-- обычная цена -->
+          <div class="price price--regular" data-price-regular hidden={presaleOn}>
+            <p class="price__v">{rub(prices.sama)}</p>
+            <p class="price__note">
+              Цена старта — {rub(prices.samaStart)}: в&nbsp;предпродажу и&nbsp;48&nbsp;часов после бесплатного челленджа в&nbsp;боте.
+            </p>
+          </div>
+          <!-- предпродажа: включается в config.ts -->
+          {
+            presale.enabled && (
+              <div class="price price--presale" data-price-presale hidden={!presaleOn}>
+                <p class="price__v">
+                  {rub(prices.samaStart)} <s class="price__old">{rub(prices.sama)}</s>
+                </p>
+                <p class="price__note">Цена старта — до&nbsp;{untilLabel.replace(' ', ' ')} включительно.</p>
+              </div>
+            )
+          }
+        </div>
+        <ul class="plan__list">
+          {
+            sama.map((s) => (
+              <li>
+                <Check size={18} stroke-width={2.4} aria-hidden="true" />
+                {nb(s)}
+              </li>
+            ))
+          }
+        </ul>
+        <a class="btn btn--ghost plan__btn" href={bot.sama}>Выбрать в Telegram</a>
+      </article>
+
+      <article class="plan plan--dark dark" data-reveal style="--i:1">
+        <h3 class="plan__name">С&nbsp;разбором</h3>
+        <div class="price">
+          <p class="price__v">{rub(prices.razbor)}</p>
+          <p class="price__note">Для тех, кому важен взгляд со&nbsp;стороны.</p>
+        </div>
+        <ul class="plan__list">
+          {
+            razbor.map((s) => (
+              <li>
+                <Check size={18} stroke-width={2.4} aria-hidden="true" />
+                {nb(s)}
+              </li>
+            ))
+          }
+        </ul>
+        <a class="btn btn--rose plan__btn" href={bot.razbor}>Выбрать в Telegram</a>
+        <span class="plan__circle" aria-hidden="true"></span>
+      </article>
+    </div>
+
+    <div class="pr__regina" data-reveal>
+      <p>
+        <b>«С&nbsp;Региной»</b> — работа в&nbsp;группе с&nbsp;личными разборами Регины: потоки <span class="nowrap">2–3&nbsp;раза</span> в&nbsp;год, от&nbsp;{rub(prices.reginaFrom)}.
+      </p>
+      <a class="link pr__regina-link" href={bot.regina}>
+        Узнать о&nbsp;следующем потоке
+        <ArrowUpRight size={18} stroke-width={2} aria-hidden="true" />
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .pr__cards {
+    display: grid;
+    gap: 18px;
+    align-items: center;
+  }
+
+  .plan {
+    position: relative;
+    display: grid;
+    gap: 22px;
+    padding: clamp(28px, 4vw, 44px);
+    border-radius: var(--r-xl);
+    background: var(--card);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .plan--dark {
+    background: var(--ink);
+    color: var(--on-dark);
+    box-shadow: 0 30px 70px rgba(47, 43, 39, 0.28);
+  }
+
+  .plan__circle {
+    position: absolute;
+    width: 260px;
+    aspect-ratio: 1;
+    right: -90px;
+    top: -110px;
+    border-radius: 50%;
+    background: var(--ink-2);
+    z-index: 0;
+  }
+
+  .plan > :not(.plan__circle) {
+    position: relative;
+    z-index: 1;
+  }
+
+  .plan__flag {
+    justify-self: start;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--rose);
+    color: var(--ink);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: -6px;
+  }
+
+  .plan__name {
+    font-size: clamp(28px, 3vw, 36px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+
+  .price__v {
+    font-weight: 800;
+    font-size: clamp(48px, 6vw, 72px);
+    letter-spacing: -0.045em;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .price__old {
+    font-size: 0.42em;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--quiet);
+    text-decoration-thickness: 2px;
+    vertical-align: 0.5em;
+    margin-left: 6px;
+  }
+
+  .price__note {
+    margin-top: 12px;
+    font-size: 15px;
+    color: var(--muted);
+    max-width: 40ch;
+  }
+
+  .plan--dark .price__note {
+    color: var(--on-dark-muted);
+  }
+
+  .plan__list {
+    display: grid;
+    gap: 12px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+  }
+
+  .plan--dark .plan__list {
+    border-top-color: rgba(244, 240, 234, 0.14);
+  }
+
+  .plan__list li {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-weight: 500;
+  }
+
+  .plan__list :global(svg) {
+    flex: none;
+    margin-top: 3px;
+    color: var(--accent);
+  }
+
+  .plan--dark .plan__list :global(svg) {
+    color: var(--rose);
+  }
+
+  .plan__btn {
+    width: 100%;
+    margin-top: 6px;
+  }
+
+  .pr__regina {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px 28px;
+    margin-top: 24px;
+    padding: 22px 26px;
+    border-radius: var(--r-md);
+    border: 1.5px dashed rgba(140, 83, 73, 0.4);
+    font-size: 16px;
+  }
+
+  .pr__regina p {
+    max-width: 62ch;
+  }
+
+  .pr__regina-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+  }
+
+  @media (min-width: 900px) {
+    .pr__cards {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
+      gap: 24px;
+    }
+
+    .plan--dark {
+      padding-block: clamp(44px, 5vw, 60px);
+    }
+  }
+</style>

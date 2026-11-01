@@ -1,0 +1,156 @@
+---
+import { typo } from '../../utils/typo';
+import { Plus } from '@lucide/astro';
+import { config } from '../../config';
+const faq = [
+  { q: 'У меня мало времени', a: 'Урок идёт 6–12 минут, задание — 30–40 минут. Уроки по будням, выходные свободны.' },
+  { q: 'Я стесняюсь сниматься', a: 'Первый модуль — как раз про страх оценки. Начинаем со сторис и каруселей, к роликам переходим на второй неделе.' },
+  { q: 'У меня пока нет продукта или услуги', a: 'Для старта он не нужен. В уроке про закрепы есть вариант «мой путь», а в последнем модуле разбираем, что предлагать.' },
+  { q: 'Подойдёт для VK или Telegram?', a: 'Примеры в курсе — на Instagram*, но формула темы, контент-план, ролики, карусели и путь клиента так же работают в VK и Telegram.' },
+  { q: 'Нужен монтажёр или дорогая техника?', a: 'Нет. Хватит телефона и бесплатных приложений, а с идеями и текстами помогает нейросеть.' },
+  { q: 'Где смотреть уроки?', a: 'В личном кабинете на сайте — с телефона или компьютера. Ссылку и пароль пришлёт бот после оплаты.' },
+  { q: 'Можно пройти быстрее?', a: 'Можно смотреть в своём темпе, но мы советуем один урок в день: так вы успеваете делать задания, и через 3 недели у вас 12 публикаций, а не 16 просмотренных видео.' },
+  { q: 'Сколько длится доступ?', a: '12 месяцев. Пересматривайте уроки и возвращайтесь к материалам в любое время.' },
+  { q: 'Можно ли вернуть деньги?', a: config.legal.refund },
+];
+const nb = typo;
+---
+
+<section class="faq section" id="faq" aria-labelledby="faq-h">
+  <div class="wrap faq__grid">
+    <div class="head faq__head">
+      <p class="eyebrow">Вопросы</p>
+      <h2 class="h2" id="faq-h">Частые вопросы</h2>
+      <p class="faq__help">
+        Не нашли ответ? <a class="link" href={config.contacts.telegram}>Напишите Регине в&nbsp;Telegram</a>
+      </p>
+    </div>
+    <ul class="faq__list">
+      {
+        faq.map((f, i) => (
+          <li class="qa" data-acc>
+            <h3 class="qa__h">
+              <button type="button" class="qa__btn" aria-expanded="false" aria-controls={`qa-${i}`} id={`qa-btn-${i}`} data-acc-btn>
+                <span>{nb(f.q)}</span>
+                <span class="qa__icon" aria-hidden="true">
+                  <Plus size={20} stroke-width={2} />
+                </span>
+              </button>
+            </h3>
+            <div class="qa__panel" id={`qa-${i}`} role="region" aria-labelledby={`qa-btn-${i}`}>
+              <div class="qa__inner">
+                <p>{nb(f.a)}</p>
+              </div>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .faq__help {
+    color: var(--muted);
+  }
+
+  .faq__list {
+    display: grid;
+    gap: 10px;
+  }
+
+  .qa {
+    border-radius: var(--r-md);
+    background: var(--card);
+    box-shadow: 0 10px 26px rgba(47, 43, 39, 0.05);
+  }
+
+  .qa__h {
+    font: inherit;
+  }
+
+  .qa__btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+    min-height: 68px;
+    padding: 16px 18px 16px 24px;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    font-weight: 700;
+    font-size: 17.5px;
+    letter-spacing: -0.01em;
+    cursor: pointer;
+    border-radius: var(--r-md);
+  }
+
+  .qa__icon {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--bg);
+    flex: none;
+    transition:
+      transform 0.35s var(--ease),
+      background-color 0.25s;
+  }
+
+  .qa.is-open .qa__icon {
+    transform: rotate(45deg);
+    background: var(--rose);
+  }
+
+  .qa__panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.4s var(--ease);
+  }
+
+  .qa.is-open .qa__panel {
+    grid-template-rows: 1fr;
+  }
+
+  .qa__inner {
+    overflow: hidden;
+    min-height: 0;
+    visibility: hidden;
+    transition: visibility 0s 0.4s;
+  }
+
+  .qa.is-open .qa__inner {
+    visibility: visible;
+    transition: visibility 0s;
+  }
+
+  .qa__inner p {
+    padding: 0 24px 22px;
+    color: var(--muted);
+    max-width: 62ch;
+  }
+
+  @media (min-width: 1100px) {
+    .faq__grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
+      gap: 64px;
+      align-items: start;
+    }
+
+    .faq__head {
+      position: sticky;
+      top: calc(var(--header-h) + 32px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .qa__panel,
+    .qa__icon {
+      transition: none;
+    }
+  }
+</style>

@@ -1,0 +1,409 @@
+---
+import { typo } from '../../utils/typo';
+import { Check, X, ArrowRight } from '@lucide/astro';
+const results = [
+  { title: 'Профиль, понятный за 5 секунд', text: 'Незнакомый человек сразу видит, кто вы, для кого и зачем подписываться.' },
+  { title: 'Контент-план на месяц', text: 'Рубрики и 16 тем вперёд: вопрос «что выложить сегодня» больше не возникает.' },
+  { title: '12 публикаций', text: 'Закрепы, рилс, карусели и истории в сторис. Опубликованы, а не в черновиках.' },
+  { title: 'Путь клиента', text: 'Кодовое слово, ответ в директе и Telegram: понятно, куда писать и что человек получит.' },
+];
+---
+
+<section class="res section" aria-labelledby="res-h">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">Что будет через 21 день</p>
+      <h2 class="h2" id="res-h">Четыре результата, которые можно показать</h2>
+    </div>
+
+    <div class="res__layout">
+      <ol class="res__list">
+        {
+          results.map((r, i) => (
+            <li class="card res__card" style={`--i:${i}`} data-reveal data-ghost={`0${i + 1}`}>
+              <span class="res__n mono">0{i + 1}</span>
+              <h3 class="h3">{typo(r.title)}</h3>
+              <p>{typo(r.text)}</p>
+            </li>
+          ))
+        }
+      </ol>
+
+      <figure class="bio" data-reveal data-bio>
+        <figcaption class="bio__head">
+          <span class="eyebrow">Шапка за 5 секунд</span>
+          <span class="bio__switch" role="group" aria-label="Пример шапки профиля">
+            <button type="button" aria-pressed="false" data-bio-btn="was">Было</button>
+            <button type="button" aria-pressed="true" data-bio-btn="now">Стало</button>
+          </span>
+        </figcaption>
+
+        <div class="phone">
+          <div class="phone__screen">
+            <div class="phone__top" aria-hidden="true">
+              <span class="phone__notch"></span>
+            </div>
+            <div class="phone__profile">
+              <span class="phone__ava" aria-hidden="true"></span>
+              <div class="phone__stats" aria-hidden="true">
+                <i></i><i></i><i></i>
+              </div>
+            </div>
+            <div class="phone__bio" data-state="now">
+              <p class="phone__bio-was">
+                <X size={15} stroke-width={2.4} aria-hidden="true" />
+                <span>Маникюр Нефтекамск</span>
+              </p>
+              <div class="phone__bio-now">
+                <p><b>Мастер маникюра в&nbsp;Нефтекамске</b></p>
+                <p>Аккуратное покрытие, которое долго носится</p>
+                <p class="phone__cta-line">Свободные окна и&nbsp;запись ↓</p>
+              </div>
+            </div>
+            <div class="phone__btns" aria-hidden="true"><i></i><i></i></div>
+            <div class="phone__hl" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+            <div class="phone__grid" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          </div>
+        </div>
+
+        <p class="bio__note">
+          <span class="bio__arrow" aria-hidden="true"><ArrowRight size={16} stroke-width={2.2} /></span>
+          Три строки: кто вы и&nbsp;для кого, что получит читатель, следующий шаг. Разбираем в&nbsp;уроке&nbsp;4.
+        </p>
+        <p class="sr-only">Было: «Маникюр Нефтекамск». Стало: «Мастер маникюра в Нефтекамске / Аккуратное покрытие, которое долго носится / Свободные окна и запись».</p>
+        <span class="bio__ok" aria-hidden="true"><Check size={18} stroke-width={2.6} /></span>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-bio]').forEach((root) => {
+    const bio = root.querySelector<HTMLElement>('.phone__bio');
+    const btns = root.querySelectorAll<HTMLButtonElement>('[data-bio-btn]');
+    btns.forEach((btn) =>
+      btn.addEventListener('click', () => {
+        const state = btn.dataset.bioBtn ?? 'now';
+        bio?.setAttribute('data-state', state);
+        root.dataset.state = state;
+        btns.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      }),
+    );
+  });
+</script>
+
+<style>
+  .res__layout {
+    display: grid;
+    gap: 28px;
+  }
+
+  .res__list {
+    display: grid;
+    gap: 14px;
+  }
+
+  .res__card {
+    overflow: hidden;
+    display: grid;
+    grid-template-rows: 1fr auto auto;
+    gap: 10px;
+    min-height: 220px;
+  }
+
+  .res__card p {
+    color: var(--muted);
+    font-size: 16px;
+    max-width: 34ch;
+  }
+
+  /* призрачный номер — псевдоэлементом: чисто декоративный, не попадает в доступность */
+  .res__card::after {
+    content: attr(data-ghost);
+    position: absolute;
+    right: -4px;
+    top: -10px;
+    font-weight: 800;
+    font-size: clamp(130px, 13vw, 190px);
+    letter-spacing: -0.05em;
+    line-height: 0.8;
+    color: var(--accent);
+    opacity: 0.09;
+    pointer-events: none;
+  }
+
+  .res__n {
+    font-size: 13px;
+    color: var(--accent);
+  }
+
+  /* ---- телефон ---- */
+  .bio {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 22px;
+    padding: clamp(24px, 3vw, 36px);
+    border-radius: var(--r-xl);
+    background: var(--rose-soft);
+  }
+
+  .bio__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+  }
+
+  .bio__switch {
+    display: inline-flex;
+    padding: 4px;
+    border-radius: 14px;
+    background: var(--card);
+    box-shadow: var(--shadow);
+  }
+
+  .bio__switch button {
+    min-height: 40px;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    font-weight: 700;
+    font-size: 14.5px;
+    cursor: pointer;
+    transition:
+      background-color 0.25s,
+      color 0.25s;
+  }
+
+  .bio__switch button[aria-pressed='true'] {
+    background: var(--ink);
+    color: var(--on-dark);
+  }
+
+  .phone {
+    width: min(300px, 100%);
+    padding: 10px;
+    border-radius: 44px;
+    background: var(--ink);
+    box-shadow: var(--shadow-lift);
+  }
+
+  .phone__screen {
+    border-radius: 35px;
+    background: #fff;
+    padding: 14px 16px 18px;
+    display: grid;
+    gap: 14px;
+    overflow: hidden;
+  }
+
+  .phone__top {
+    display: grid;
+    place-items: center;
+    height: 18px;
+  }
+
+  .phone__notch {
+    width: 84px;
+    height: 20px;
+    border-radius: 12px;
+    background: var(--ink);
+  }
+
+  .phone__profile {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .phone__ava {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 50% 38%, #f4f0ea 0 22%, transparent 23%),
+      radial-gradient(ellipse at 50% 100%, #f4f0ea 0 42%, transparent 43%),
+      var(--rose);
+    box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--rose);
+    flex: none;
+  }
+
+  .phone__stats {
+    display: flex;
+    gap: 12px;
+    flex: 1;
+  }
+
+  .phone__stats i,
+  .phone__btns i,
+  .phone__hl i,
+  .phone__grid i {
+    display: block;
+    background: #efe9e1;
+    border-radius: 6px;
+  }
+
+  .phone__stats i {
+    flex: 1;
+    height: 26px;
+  }
+
+  .phone__bio {
+    display: grid;
+    min-height: 92px;
+    font-size: 13.5px;
+    line-height: 1.38;
+  }
+
+  .phone__bio-was,
+  .phone__bio-now {
+    grid-area: 1 / 1;
+    transition:
+      opacity 0.35s var(--ease),
+      transform 0.35s var(--ease);
+  }
+
+  .phone__bio-was {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    align-self: start;
+    font-weight: 700;
+    color: var(--muted);
+  }
+
+  .phone__bio-was :global(svg) {
+    color: var(--accent);
+  }
+
+  .phone__cta-line {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .phone__bio[data-state='now'] .phone__bio-was,
+  .phone__bio[data-state='was'] .phone__bio-now {
+    opacity: 0;
+    transform: translateY(6px);
+    pointer-events: none;
+  }
+
+  .phone__btns {
+    display: flex;
+    gap: 8px;
+  }
+
+  .phone__btns i {
+    flex: 1;
+    height: 28px;
+    border-radius: 8px;
+  }
+
+  .phone__btns i:first-child {
+    background: var(--ink);
+  }
+
+  .phone__hl {
+    display: flex;
+    gap: 12px;
+  }
+
+  .phone__hl i {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--rose-soft);
+    box-shadow: inset 0 0 0 2px #e9e1d7;
+  }
+
+  .phone__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
+    margin-inline: -16px;
+    margin-bottom: -18px;
+  }
+
+  .phone__grid i {
+    aspect-ratio: 3 / 4;
+    border-radius: 0;
+  }
+
+  .phone__grid i:nth-child(2),
+  .phone__grid i:nth-child(6) {
+    background: var(--rose);
+  }
+
+  .phone__grid i:nth-child(4) {
+    background: var(--ink);
+  }
+
+  .bio__note {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    max-width: 40ch;
+    font-size: 15px;
+    color: var(--muted);
+  }
+
+  .bio__arrow {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--rose);
+    color: var(--ink);
+    flex: none;
+  }
+
+  .bio__ok {
+    position: absolute;
+    right: clamp(18px, 4vw, 44px);
+    top: 46%;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--rose);
+    box-shadow: var(--shadow-lift);
+    transition:
+      opacity 0.3s,
+      transform 0.3s var(--ease);
+  }
+
+  [data-bio][data-state='was'] .bio__ok {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+
+  @media (min-width: 720px) {
+    .res__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .res__layout {
+      grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.9fr);
+      gap: 32px;
+      align-items: stretch;
+    }
+
+    .res__card {
+      min-height: 250px;
+    }
+
+    .bio {
+      align-content: center;
+    }
+  }
+</style>
