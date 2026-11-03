@@ -11,7 +11,7 @@
 | Что | Где в `config.ts` |
 |---|---|
 | Цены тарифов | `prices` |
-| Предпродажа (3 990 ₽ крупно, 4 990 ₽ зачёркнуто) | `presale.enabled: true` и дата `presale.until`. После даты сайт сам вернёт обычную цену |
+| Предпродажа (5 900 ₽ крупно, 6 600 ₽ зачёркнуто) | `presale.enabled: true` и дата `presale.until`. После даты сайт сам вернёт обычную цену |
 | Ссылки бота (start-параметры) | `bot` |
 | Показать блок отзывов | положить скрины в `src/assets/reviews/` и `flags.showReviews: true` |
 | Трейлер на первом экране | `trailer` + `flags.showTrailer: true` |
