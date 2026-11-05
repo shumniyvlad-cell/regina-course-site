@@ -58,7 +58,7 @@ export const config = {
     instagramLabel: '@regina.reporter',
     agencyInstagram: 'https://instagram.com/smm.vmedia',
     agencyInstagramLabel: '@smm.vmedia',
-    email: '[e-mail для обращений]',
+    email: 'reginanurieva777@mail.ru',
   },
 
   legal: {
