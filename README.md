@@ -2,7 +2,7 @@
 
 Статический сайт на Astro: лендинг курса Регины Репортёр + закрытый раздел уроков `/learn/` под паролем (StatiCrypt). Деплой — GitHub Pages через GitHub Actions на каждый push в `main`.
 
-Живой адрес: https://shumniyvlad-cell.github.io/regina-course-site/
+Живой адрес: https://smmvmedia.ru/ (DNS на reg.ru, аккаунт Регины)
 
 ## Что где менять
 
@@ -57,7 +57,7 @@ gh workflow run deploy.yml
 ```bash
 npm ci
 cp .env.example .env   # вписать свой COURSE_PASSWORD
-npm run dev            # http://localhost:4321/regina-course-site/
+npm run dev            # http://localhost:4321/
 npm run build          # проверка типов + сборка + шифрование /learn в dist/
 ```
 

@@ -5,8 +5,8 @@ const BOT = 'https://t.me/reporter_code_bot';
 
 export const config = {
   // Адрес сайта. Свой домен: site: 'https://домен.ru', base: '/' (+ public/CNAME, см. README)
-  site: 'https://shumniyvlad-cell.github.io',
-  base: '/regina-course-site',
+  site: 'https://smmvmedia.ru',
+  base: '/',
 
   brand: {
     course: 'Выйти из черновиков',
@@ -78,7 +78,7 @@ export function rub(value: number): string {
   return `${value.toLocaleString('ru-RU').replace(/\s/g, ' ')} ₽`;
 }
 
-/** Путь с учётом base: url('learn/') → '/regina-course-site/learn/' */
+/** Путь с учётом base: url('learn/') → '/learn/' */
 export function url(path = ''): string {
   const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
   return base + path.replace(/^\//, '');
