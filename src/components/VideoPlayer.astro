@@ -83,10 +83,22 @@ const ready = video.provider !== 'none' && !!video.id;
       let video = frame.querySelector('video');
       if (!video) {
         video = document.createElement('video');
+        // файлы лежат на v.smmvmedia.ru: субтитры — рядом, lesson_NN.vtt (нужен CORS, поэтому crossorigin)
+        video.crossOrigin = 'anonymous';
         video.src = id;
         video.controls = true;
         video.playsInline = true;
         video.preload = 'metadata';
+        video.setAttribute('controlslist', 'nodownload');
+        video.addEventListener('contextmenu', (e) => e.preventDefault());
+        if (id.endsWith('.mp4')) {
+          const track = document.createElement('track');
+          track.kind = 'subtitles';
+          track.srclang = 'ru';
+          track.label = 'Русские субтитры';
+          track.src = id.replace(/\.mp4$/, '.vtt');
+          video.append(track);
+        }
         frame.replaceChildren(video);
       }
       video.currentTime = t;

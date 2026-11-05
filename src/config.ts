@@ -62,12 +62,12 @@ export const config = {
   },
 
   legal: {
-    fullName: 'Нуриева Регина [отчество]',
-    inn: '[ИНН]',
+    fullName: 'Нуриева Регина Руслановна',
+    inn: '025302267370',
     status: 'самозанятая',
-    paymentConfirm: 'обычно в течение [N] часов днём',
+    paymentConfirm: 'сразу после оплаты',
     refund: '[условия возврата — уточнить]',
-    documentsDate: '[дата публикации]',
+    documentsDate: '5 ноября 2026',
   },
 } as const;
 
